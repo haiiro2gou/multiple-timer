@@ -15,7 +15,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\"",
     "lint": "npm-run-all --parallel eslint check-types",
     "lint:fix": "npm-run-all --parallel eslint:fix check-types format",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "author": "haiiro2gou <mrashen.2gou@gmail.com>",
   "license": "MIT License",
@@ -52,10 +52,9 @@
     "vite": "^7.1.0"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "prettier --write", "eslint --cache --fix"
-    ],
     "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --cache --fix",
       "bash -c 'tsc --noEmit'"
     ],
     "*.json": [
