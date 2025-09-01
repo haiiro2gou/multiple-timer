@@ -5,8 +5,8 @@ import { type TimerData } from "../types/timer.ts";
 import {
     loadTimerDatasFromStorage,
     saveTimerDatasToStorage,
-} from "../components/storage.ts";
-import { queryKeys } from "../components/query-key.ts";
+} from "../components/cache/storage.ts";
+import { queryKeys } from "../components/cache/query-key.ts";
 
 export const useTimers = () => {
     const queryClient = useQueryClient();

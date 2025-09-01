@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import { AppQueryProvider } from "./components/query-provider.tsx";
+import { AppQueryProvider } from "./components/cache/query-provider.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 
 import { Home } from "./pages/Home.tsx";

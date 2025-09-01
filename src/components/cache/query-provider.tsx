@@ -1,7 +1,7 @@
 import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { type TimerData } from "../types/timer.ts";
+import { type TimerData } from "../../types/timer.ts";
 import { loadTimerDatasFromStorage } from "./storage.ts";
 import { queryKeys } from "./query-key.ts";
 
