@@ -8,22 +8,20 @@ import Home from "./pages/Home.tsx";
 import Timer from "./pages/Timer.tsx";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export default function App() {
-    return (
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-        >
-            <QueryProvider>
-                <div>
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/timer/" element={<Timer />} />
-                    </Routes>
-                </div>
-            </QueryProvider>
-        </ThemeProvider>
-    );
-}
+export const App = () => (
+    <ThemeProvider
+        attribute="class"
+        defaultTheme="light"
+        enableSystem
+        disableTransitionOnChange
+    >
+        <QueryProvider>
+            <div>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/timer/" element={<Timer />} />
+                </Routes>
+            </div>
+        </QueryProvider>
+    </ThemeProvider>
+);
