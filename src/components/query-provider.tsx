@@ -1,44 +1,36 @@
 import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { persistQueryClient } from "@tanstack/react-query-persist-client";
-import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 
-const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            gcTime: 1000 * 60 * 60 * 24 * 30, // 30 days
-        },
-    },
-});
+import { type TimerData } from "../types/timer.ts";
+import { loadTimerDatasFromStorage } from "./storage.ts";
+import { queryKeys } from "./query-key.ts";
 
-const localStoragePersister = createAsyncStoragePersister({
-    // eslint-disable-next-line n/no-unsupported-features/node-builtins
-    storage: window.localStorage,
-});
+const initializeQueryClient = (): QueryClient => {
+    const queryClient = new QueryClient();
+    const loadedTimerDatas = loadTimerDatasFromStorage();
+    const now = Date.now();
 
-interface QueryProviderProps {
-    children: React.ReactNode;
-}
+    const restoredTimerDatas = loadedTimerDatas.map(elem => {
+        if (elem.status === "running" && now >= elem.targetTime)
+            return { ...elem, status: "finished" as TimerData["status"] };
+        return elem;
+    });
+
+    queryClient.setQueryData<TimerData[]>(queryKeys.timers, restoredTimerDatas);
+    return queryClient;
+};
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const QueryProvider = ({ children }: QueryProviderProps) => {
-    const [isPersistReady, setIsPersistReady] = React.useState(false);
-
-    React.useEffect(() => {
-        const restoreCache = () => {
-            void persistQueryClient({
-                queryClient,
-                persister: localStoragePersister,
-            });
-            setIsPersistReady(true);
-        };
-
-        restoreCache();
-    }, []);
+export const AppQueryProvider = ({
+    children,
+}: {
+    children: React.ReactNode;
+}) => {
+    const [queryClient] = React.useState(() => initializeQueryClient());
 
     return (
         <QueryClientProvider client={queryClient}>
-            {isPersistReady ? children : <div>Loading...</div>}
+            {children}
         </QueryClientProvider>
     );
 };

@@ -1,47 +1,39 @@
 import * as React from "react";
-import { useQuery } from "@tanstack/react-query";
 
-interface TimerData {
-    name: string;
-    isActive: boolean;
-    triggerTime: Date | number; // Date for absolute time, number for seconds until trigger
-    repeat: boolean;
-}
-
-const fetchTimers = () => [] as TimerData[];
+import { TimerItem } from "../components/timer-item.tsx";
+import { useTimers } from "../hooks/use-timers.ts";
+import { useCurrentTime } from "../hooks/use-current-time.ts";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export default function Timer() {
-    const { data, isLoading, isError, error } = useQuery({
-        queryKey: ["haiiro2gou-timer"],
-        queryFn: fetchTimers,
-    });
+export const Timer = () => {
+    const { timers, addTimer, updateTimer } = useTimers();
+    const currentTime = useCurrentTime();
 
-    if (isLoading) return <div>Loading...</div>;
+    React.useEffect(() => {
+        timers.forEach(elem => {
+            if (elem.status === "running" && currentTime >= elem.targetTime)
+                updateTimer({ ...elem, status: "finished" });
+        });
+    }, [currentTime, timers, updateTimer]);
 
-    if (isError) {
-        const errorMessage =
-            error instanceof Error ? error.message : "Unknown error";
-        return <div style={{ color: "red" }}>Error: {errorMessage}</div>;
-    }
+    const handleAddTimer = () => {
+        addTimer({ name: "New Timer", duration: 5 * 60 * 1000, repeat: false });
+    };
 
     return (
         <div>
-            <h2>Timer</h2>
+            <h1>Timers / Alarms</h1>
+            {/* eslint-disable-next-line react/jsx-no-bind */}
+            <button onClick={handleAddTimer}>Add 5-min Timer</button>
             <ul>
-                {data?.map(timers => (
-                    <li
-                        key={timers.name}
-                        style={{
-                            textDecoration: timers.isActive
-                                ? "none"
-                                : "line-through",
-                        }}
-                    >
-                        {timers.name}
-                    </li>
+                {timers.map(elem => (
+                    <TimerItem
+                        key={elem.id}
+                        timer={elem}
+                        currentTime={currentTime}
+                    ></TimerItem>
                 ))}
             </ul>
         </div>
     );
-}
+};
