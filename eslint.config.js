@@ -6,20 +6,20 @@ import { globalIgnores } from "eslint/config";
 import { essentials, node, typescript, react } from "@haiiro2gou/eslint-config";
 
 export default tseslint.config([
-    globalIgnores(["dist"]),
+    globalIgnores(["dist", "vite.config.ts"]),
     ...essentials,
     ...node,
     ...typescript,
     ...react,
     {
         files: ["**/*.{ts,tsx}"],
-        extends: [
-        js.configs.recommended,
-        reactRefresh.configs.vite,
-        ],
+        extends: [js.configs.recommended, reactRefresh.configs.vite],
         languageOptions: {
-        ecmaVersion: 2020,
-        globals: globals.browser,
+            ecmaVersion: 2020,
+            globals: globals.browser,
+            parserOptions: {
+                project: ["./tsconfig.json", "./tsconfig.eslint.json"],
+            },
         },
     },
 ]);

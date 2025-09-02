@@ -27,9 +27,11 @@
     "url": "https://github.com/haiiro2gou/multiple-timer/issues"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.12",
     "@tanstack/react-query": "^5.85.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "tailwindcss": "^4.1.12",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
