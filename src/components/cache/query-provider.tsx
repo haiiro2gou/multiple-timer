@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { type TimerData } from "../../types/timer.ts";
 import { loadTimerDatasFromStorage } from "./storage.ts";
-import { queryKeys } from "./query-key.ts";
+import { cacheKeys } from "./query-key.ts";
 
 const initializeQueryClient = (): QueryClient => {
     const queryClient = new QueryClient();
@@ -16,16 +16,12 @@ const initializeQueryClient = (): QueryClient => {
         return elem;
     });
 
-    queryClient.setQueryData<TimerData[]>(queryKeys.timers, restoredTimerDatas);
+    queryClient.setQueryData<TimerData[]>(cacheKeys.timers, restoredTimerDatas);
     return queryClient;
 };
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const AppQueryProvider = ({
-    children,
-}: {
-    children: React.ReactNode;
-}) => {
+export const CacheProvider = ({ children }: { children: React.ReactNode }) => {
     const [queryClient] = React.useState(() => initializeQueryClient());
 
     return (
