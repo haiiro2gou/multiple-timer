@@ -1,4 +1,4 @@
-import { type TimerData } from "../../types/timer.ts";
+import { type TimerData } from "../types.ts";
 
 const STORAGE_KEY = "haiiro2gou-timer";
 

@@ -3,8 +3,7 @@ import { createRoot } from "react-dom/client";
 
 import "./index.css";
 import { App } from "./App.tsx";
-import { CacheProvider } from "./components/cache-provider.tsx";
-import { ThemeProvider } from "./components/theme-provider.tsx";
+import { ThemeProvider } from "./features/theme-provider.tsx";
 
 createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
@@ -14,9 +13,7 @@ createRoot(document.getElementById("root")!).render(
             enableSystem
             disableTransitionOnChange
         >
-            <CacheProvider>
-                <App />
-            </CacheProvider>
+            <App />
         </ThemeProvider>
     </React.StrictMode>
 );

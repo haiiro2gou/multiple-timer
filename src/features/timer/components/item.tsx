@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { type TimerData } from "../../types/timer.ts";
+import { type TimerData } from "../types.ts";
 
 const calculateRemainingTime = (
     timer: TimerData,

@@ -1,6 +1,6 @@
 import { type QueryClient } from "@tanstack/react-query";
 
-import { type TimerData } from "../../types/timer.ts";
+import { type TimerData } from "../types.ts";
 import { loadTimerDatasFromStorage } from "./storage.ts";
 import { timerQueryKeys } from "./query-key.ts";
 

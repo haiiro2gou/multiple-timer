@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import { Modal } from "./modal";
-import { ModalContext } from "./context";
+import { Modal } from "./modal.tsx";
+import { ModalContext } from "./context.ts";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({

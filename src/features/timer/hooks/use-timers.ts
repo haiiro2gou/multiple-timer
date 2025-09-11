@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
 
-import { type TimerData } from "../types/timer.ts";
+import { type TimerData } from "../types.ts";
 import {
     loadTimerDatasFromStorage,
     saveTimerDatasToStorage,
-} from "../components/timer/storage.ts";
-import { timerQueryKeys } from "../components/timer/query-key.ts";
+} from "../components/storage.ts";
+import { timerQueryKeys } from "../components/query-key.ts";
 
 export const useTimers = () => {
     const queryClient = useQueryClient();
