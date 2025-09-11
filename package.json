@@ -10,7 +10,7 @@
     "build": "npm-run-all clean tsc && vite build",
     "check-types": "tsc --noEmit",
     "eslint": "eslint src/**/*.tsx",
-    "eslint:fix": "eslint --fix src/**/*.tsx",
+    "eslint:fix": "eslint --fix src/**/*.{ts,tsx}",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json}\"",
     "lint": "npm-run-all --parallel eslint check-types",
     "lint:fix": "npm-run-all --parallel eslint:fix check-types format",

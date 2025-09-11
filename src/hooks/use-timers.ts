@@ -5,13 +5,13 @@ import { type TimerData } from "../types/timer.ts";
 import {
     loadTimerDatasFromStorage,
     saveTimerDatasToStorage,
-} from "../components/cache/storage.ts";
-import { cacheKeys } from "../components/cache/query-key.ts";
+} from "../components/timer/storage.ts";
+import { timerQueryKeys } from "../components/timer/query-key.ts";
 
 export const useTimers = () => {
     const queryClient = useQueryClient();
     const { data: timers = [] } = useQuery<TimerData[]>({
-        queryKey: cacheKeys.timers,
+        queryKey: timerQueryKeys.all,
         queryFn: () => loadTimerDatasFromStorage(),
     });
 
@@ -22,7 +22,7 @@ export const useTimers = () => {
             return Promise.resolve();
         },
         onSuccess: (_, updatedTimers) => {
-            queryClient.setQueryData<TimerData[]>(cacheKeys.timers, updatedTimers);
+            queryClient.setQueryData<TimerData[]>(timerQueryKeys.all, updatedTimers);
         },
     });
     */
@@ -49,7 +49,7 @@ export const useTimers = () => {
         },
         onSuccess: updatedTimers => {
             queryClient.setQueryData<TimerData[]>(
-                cacheKeys.timers,
+                timerQueryKeys.all,
                 updatedTimers
             );
         },
@@ -65,7 +65,7 @@ export const useTimers = () => {
         },
         onSuccess: updatedTimers => {
             queryClient.setQueryData<TimerData[]>(
-                cacheKeys.timers,
+                timerQueryKeys.all,
                 updatedTimers
             );
         },

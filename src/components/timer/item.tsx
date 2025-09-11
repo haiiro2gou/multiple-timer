@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { type TimerData } from "../types/timer.ts";
+import { type TimerData } from "../../types/timer.ts";
 
 const calculateRemainingTime = (
     timer: TimerData,
@@ -12,11 +12,11 @@ const calculateRemainingTime = (
     return Math.max(0, remaining);
 };
 
-const formatTime = (ms: number): string => {
-    const totalSeconds = Math.floor(ms / 1000);
+const formatTimer = (ms: number): string => {
+    const totalSeconds = Math.ceil(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
 interface TimerItemProps {
@@ -30,7 +30,7 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
 
     const getDisplayTime = () => {
         if (timer.status === "finished") return "Finished!";
-        return formatTime(remainingTime);
+        return formatTimer(remainingTime);
     };
 
     return (

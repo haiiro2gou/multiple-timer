@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { TimerItem } from "./components/timer-item.tsx";
+import { TimerItem } from "./components/timer/item.tsx";
 import { useTimers } from "./hooks/use-timers.ts";
 import { useCurrentTime } from "./hooks/use-current-time.ts";
 

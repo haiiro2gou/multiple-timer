@@ -6,7 +6,7 @@ export const loadTimerDatasFromStorage = (): TimerData[] => {
     try {
         // eslint-disable-next-line n/no-unsupported-features/node-builtins
         const serializedData = localStorage.getItem(STORAGE_KEY);
-        if (serializedData !== null && serializedData !== "")
+        if (serializedData !== null)
             return JSON.parse(serializedData) as TimerData[];
         return [];
     } catch (e) {
@@ -15,10 +15,10 @@ export const loadTimerDatasFromStorage = (): TimerData[] => {
     }
 };
 
-export const saveTimerDatasToStorage = (timers: TimerData[]): void => {
+export const saveTimerDatasToStorage = (timerDatas: TimerData[]): void => {
     try {
         // eslint-disable-next-line n/no-unsupported-features/node-builtins
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(timers));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(timerDatas));
     } catch (e) {
         console.error("Failed to save timers to storage:", e);
     }
