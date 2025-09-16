@@ -12,7 +12,7 @@ const calculateRemainingTime = (
     return Math.max(0, remaining);
 };
 
-const formatTimer = (ms: number): string => {
+const formatTime = (ms: number): string => {
     const totalSeconds = Math.ceil(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -27,19 +27,36 @@ interface TimerItemProps {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
     const remainingTime = calculateRemainingTime(timer, currentTime);
+    const isFinished = timer.status === "finished";
 
     const getDisplayTime = () => {
         if (timer.status === "finished") return "Finished!";
-        return formatTimer(remainingTime);
+        return formatTime(remainingTime);
     };
 
-    const isFinished = timer.status === "finished";
-    const cardClassName = `timer-item ${isFinished ? "finished" : ""}`;
-
     return (
-        <li className={cardClassName}>
-            <span className="timer-name">{timer.name}: </span>
-            <strong className="timer-name">{getDisplayTime()}</strong>
+        <li
+            className={`
+                flex items-center justify-between p-4 bg-white rounded-lg shadow-md
+                transition-colors duration-300
+                ${isFinished ? "bg-green-50" : "bg-white"}
+            `}
+        >
+            <span
+                className={`text-lg font-medium
+                    ${isFinished ? "text-green-800" : "text-slate-700"}
+                `}
+            >
+                {timer.name}
+            </span>
+            <strong
+                className={`
+                    font-mono text-3xl font-bold tracking-wider
+                    ${isFinished ? "text-green-600" : "text-slate-900"}
+                `}
+            >
+                {getDisplayTime()}
+            </strong>
         </li>
     );
 };
