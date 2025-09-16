@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import "../style.css";
 import { type TimerData } from "../types.ts";
 import { TimerItem } from "./item.tsx";
 
@@ -13,7 +14,7 @@ export const TimerList = ({ timers, currentTime }: TimerListProps) => {
     if (timers.length === 0) return <div>No timers available.</div>;
 
     return (
-        <div>
+        <ul className="timer-list">
             {timers.map(elem => (
                 <TimerItem
                     key={elem.id}
@@ -21,6 +22,6 @@ export const TimerList = ({ timers, currentTime }: TimerListProps) => {
                     currentTime={currentTime}
                 ></TimerItem>
             ))}
-        </div>
+        </ul>
     );
 };

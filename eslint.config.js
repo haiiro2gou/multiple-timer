@@ -6,7 +6,7 @@ import { globalIgnores } from "eslint/config";
 import { essentials, node, typescript, react } from "@haiiro2gou/eslint-config";
 
 export default tseslint.config([
-    globalIgnores(["dist", "vite.config.ts"]),
+    globalIgnores(["dist", "vite.config.ts", "tailwind.config.ts"]),
     ...essentials,
     ...node,
     ...typescript,

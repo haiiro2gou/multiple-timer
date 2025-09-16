@@ -33,10 +33,13 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
         return formatTimer(remainingTime);
     };
 
+    const isFinished = timer.status === "finished";
+    const cardClassName = `timer-item ${isFinished ? "finished" : ""}`;
+
     return (
-        <div>
-            <span>{timer.name}: </span>
-            <strong>{getDisplayTime()}</strong>
-        </div>
+        <li className={cardClassName}>
+            <span className="timer-name">{timer.name}: </span>
+            <strong className="timer-name">{getDisplayTime()}</strong>
+        </li>
     );
 };
