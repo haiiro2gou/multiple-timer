@@ -59,9 +59,24 @@ export const useTimers = () => {
         },
     });
 
+    const deleteTimerMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const updatedTimers = timers.filter(elem => elem.id !== id);
+            saveTimerDatasToStorage(updatedTimers);
+            return Promise.resolve(updatedTimers);
+        },
+        onSuccess: updatedTimers => {
+            queryClient.setQueryData<TimerData[]>(
+                timerQueryKeys.all,
+                updatedTimers
+            );
+        },
+    });
+
     return {
         timers,
         addTimer: addTimerMutation.mutate,
         updateTimer: updateTimerMutation.mutate,
+        deleteTimer: deleteTimerMutation.mutate,
     };
 };
