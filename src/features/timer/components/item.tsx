@@ -57,7 +57,7 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
                 >
                     {timer.name}
                 </span>
-                {/* Remaining Time */}
+                {/* Remaining time */}
                 <strong
                     className={`
                         font-mono text-3xl font-bold tracking-wider
