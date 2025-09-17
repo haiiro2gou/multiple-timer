@@ -21,14 +21,14 @@ export const useTimers = () => {
             duration: number;
             repeat?: boolean;
         }) => {
-            const repeat = data.repeat ?? false;
             const newTimer: TimerData = {
                 id: (uuidv4 as () => string)(),
                 name: data.name,
-                targetTime: Date.now() + data.duration,
                 status: "running",
+                duration: data.duration,
+                targetTime: Date.now() + data.duration,
                 remainingOnPause: null,
-                repeat: repeat,
+                repeat: data.repeat ?? false,
             };
 
             const updatedTimers = [...timers, newTimer];
