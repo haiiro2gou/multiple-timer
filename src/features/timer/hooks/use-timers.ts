@@ -15,18 +15,6 @@ export const useTimers = () => {
         queryFn: () => loadTimerDatasFromStorage(),
     });
 
-    /*
-    const saveAllTimersMutation = useMutation({
-        mutationFn: async (updatedTimers: TimerData[]) => {
-            saveTimerDatasToStorage(updatedTimers);
-            return Promise.resolve();
-        },
-        onSuccess: (_, updatedTimers) => {
-            queryClient.setQueryData<TimerData[]>(timerQueryKeys.all, updatedTimers);
-        },
-    });
-    */
-
     const addTimerMutation = useMutation({
         mutationFn: async (data: {
             name: string;
