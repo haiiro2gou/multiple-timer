@@ -6,7 +6,7 @@ import {
     useCurrentTime,
     useTimers,
     initializeTimerCache,
-} from "./features/timer/index.ts";
+} from "./features/timer";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const AppContent = () => {
