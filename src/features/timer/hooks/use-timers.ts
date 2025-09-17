@@ -23,7 +23,7 @@ export const useTimers = () => {
         }) => {
             const repeat = data.repeat ?? false;
             const newTimer: TimerData = {
-                id: uuidv4(),
+                id: (uuidv4 as () => string)(),
                 name: data.name,
                 targetTime: Date.now() + data.duration,
                 status: "running",
