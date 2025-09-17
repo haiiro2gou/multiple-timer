@@ -55,8 +55,6 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
 
     const getDisplayTime = () => {
         if (timer.status === "finished") return "Finished!";
-        if (timer.status === "paused")
-            return `Paused: ${formatTime(remainingTime)}`;
         return formatTime(remainingTime);
     };
 
@@ -111,14 +109,22 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
             `}
         >
             <div className="flex flex-col items-start">
-                {/* Name of the timer / alarm */}
-                <span
-                    className={`text-lg font-medium
-                        ${isFinished ? "text-green-800" : "text-slate-700"}
-                    `}
-                >
-                    {timer.name}
-                </span>
+                {/* Name and badge */}
+                <div className="flex items-center space-x-2">
+                    <span
+                        className={`
+                            text-sm font-medium
+                            ${isFinished ? "text-green-700" : "text-slate-500"}
+                        `}
+                    >
+                        {timer.name}
+                    </span>
+                    {timer.status === "paused" ? (
+                        <span className="text-xs font-semibold bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">
+                            Paused
+                        </span>
+                    ) : null}
+                </div>
                 {/* Remaining time */}
                 <strong
                     className={`
