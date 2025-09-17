@@ -13,6 +13,7 @@ export const useTimers = () => {
     const { data: timers = [] } = useQuery<TimerData[]>({
         queryKey: timerQueryKeys.all,
         queryFn: () => loadTimerDatasFromStorage(),
+        staleTime: Infinity,
     });
 
     const addTimerMutation = useMutation({
