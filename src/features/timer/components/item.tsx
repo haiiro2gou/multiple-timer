@@ -4,6 +4,7 @@ import { type TimerData } from "../types.ts";
 import { useTimers } from "../hooks/use-timers.ts";
 import { useModal } from "../../modal";
 import { EditTimerForm } from "./edit-form.tsx";
+import { DeleteConfirmation } from "./delete-confirmation.tsx";
 
 const calculateRemainingTime = (
     timer: TimerData,
@@ -57,18 +58,40 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
         return formatTime(remainingTime);
     };
 
+    const handleMenuToggle = React.useCallback(() => {
+        setIsMenuOpen(prev => !prev);
+    }, []);
+
     const handleEdit = React.useCallback(() => {
         setIsMenuOpen(false);
         showModal(<EditTimerForm timer={timer} onClose={hideModal} />);
     }, [showModal, hideModal, timer]);
 
-    const handleDelete = React.useCallback(() => {
+    const confirmDelete = React.useCallback(() => {
         deleteTimer(timer.id);
-    }, [deleteTimer, timer.id]);
+        hideModal();
+    }, [deleteTimer, hideModal, timer.id]);
 
-    const handleMenuToggle = React.useCallback(() => {
-        setIsMenuOpen(prev => !prev);
-    }, []);
+    const handleDelete = React.useCallback(
+        (event: React.MouseEvent<HTMLButtonElement>) => {
+            setIsMenuOpen(false);
+
+            // Delete immediately if Shift key is held
+            if (event.shiftKey) {
+                deleteTimer(timer.id);
+                return;
+            }
+            // Show confirmation modal
+            showModal(
+                <DeleteConfirmation
+                    timerName={timer.name}
+                    onConfirm={confirmDelete}
+                    onCancel={hideModal}
+                />
+            );
+        },
+        [deleteTimer, hideModal, showModal, timer.id, timer.name, confirmDelete]
+    );
 
     return (
         <li
