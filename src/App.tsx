@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { CacheProvider } from "./features/cache-provider.tsx";
+import { ModalProvider } from "./features/modal";
 import {
     TimerList,
     useCurrentTime,
@@ -60,8 +61,10 @@ const AppContent = () => {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const App = () => (
     <CacheProvider initializer={initializeTimerCache}>
-        <div className="min-h-screen">
-            <AppContent />
-        </div>
+        <ModalProvider>
+            <div className="min-h-screen">
+                <AppContent />
+            </div>
+        </ModalProvider>
     </CacheProvider>
 );
