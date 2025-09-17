@@ -30,7 +30,7 @@ interface TimerItemProps {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
-    const { deleteTimer } = useTimers();
+    const { deleteTimer, pauseTimer, resumeTimer } = useTimers();
     const { showModal, hideModal } = useModal();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const menuRef = React.useRef<HTMLDivElement>(null);
@@ -55,8 +55,15 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
 
     const getDisplayTime = () => {
         if (timer.status === "finished") return "Finished!";
+        if (timer.status === "paused")
+            return `Paused: ${formatTime(remainingTime)}`;
         return formatTime(remainingTime);
     };
+
+    const handlePauseResume = React.useCallback(() => {
+        if (timer.status === "running") pauseTimer(timer.id);
+        else if (timer.status === "paused") resumeTimer(timer.id);
+    }, [timer, pauseTimer, resumeTimer]);
 
     const handleMenuToggle = React.useCallback(() => {
         setIsMenuOpen(prev => !prev);
@@ -64,8 +71,10 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
 
     const handleEdit = React.useCallback(() => {
         setIsMenuOpen(false);
+        // Pause the timer if it's running
+        if (timer.status === "running") pauseTimer(timer.id);
         showModal(<EditTimerForm timer={timer} onClose={hideModal} />);
-    }, [showModal, hideModal, timer]);
+    }, [timer, pauseTimer, showModal, hideModal]);
 
     const confirmDelete = React.useCallback(() => {
         deleteTimer(timer.id);
@@ -121,8 +130,55 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
                 </strong>
             </div>
 
+            {/* Adjust space*/}
+            <div className="flex-grow" />
+
+            {/* Pause / Resume button */}
+            <div className="flex items-center space-x-2">
+                {timer.status === "running" ? (
+                    <button
+                        onClick={handlePauseResume}
+                        aria-label="Pause timer"
+                        className="p-2 text-slate-500 rounded-full transition-colors hover:bg-slate-200 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-6 w-6"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fillRule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clipRule="evenodd"
+                            />
+                        </svg>
+                    </button>
+                ) : null}
+                {timer.status === "paused" ? (
+                    <button
+                        onClick={handlePauseResume}
+                        aria-label="Resume timer"
+                        className="p-2 text-slate-500 rounded-full transition-colors hover:bg-slate-200 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-6 w-6"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                clipRule="evenodd"
+                            />
+                        </svg>
+                    </button>
+                ) : null}
+            </div>
+
+            {/* Menu button */}
             <div className="relative" ref={menuRef}>
-                {/* Menu button */}
                 <button
                     onClick={handleMenuToggle}
                     aria-label="Open menu"

@@ -74,10 +74,45 @@ export const useTimers = () => {
         },
     });
 
+    const pauseTimer = (id: string) => {
+        const timerToPause = timers.find(elem => elem.id === id);
+        if (timerToPause === undefined || timerToPause.status !== "running")
+            return;
+
+        const remainingTime = timerToPause.targetTime - Date.now();
+        const updatedTimer: TimerData = {
+            ...timerToPause,
+            status: "paused",
+            remainingOnPause: Math.max(remainingTime, 0),
+        };
+        updateTimerMutation.mutate(updatedTimer);
+    };
+
+    const resumeTimer = (id: string) => {
+        const timerToResume = timers.find(elem => elem.id === id);
+        if (
+            timerToResume === undefined ||
+            timerToResume.status !== "paused" ||
+            timerToResume.remainingOnPause === null
+        )
+            return;
+
+        const newTargetTime = Date.now() + timerToResume.remainingOnPause;
+        const updatedTimer: TimerData = {
+            ...timerToResume,
+            status: "running",
+            targetTime: newTargetTime,
+            remainingOnPause: null,
+        };
+        updateTimerMutation.mutate(updatedTimer);
+    };
+
     return {
         timers,
         addTimer: addTimerMutation.mutate,
         updateTimer: updateTimerMutation.mutate,
         deleteTimer: deleteTimerMutation.mutate,
+        pauseTimer,
+        resumeTimer,
     };
 };
