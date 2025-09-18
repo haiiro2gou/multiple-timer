@@ -127,9 +127,11 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
 
     return (
         <li
-            className={`schedule-item ${isInactive ? "opacity-60" : ""} ${isFinished ? "bg-green-50" : "bg-white"}`}
+            className={`schedule-item ${isFinished ? "bg-green-50" : "bg-white"}`}
         >
-            <div className="schedule-content">
+            <div
+                className={`schedule-content ${isInactive ? "opacity-60" : ""}`}
+            >
                 {/* Header: name and type */}
                 <div className="schedule-header">
                     <span
