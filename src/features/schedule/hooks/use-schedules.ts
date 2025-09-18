@@ -81,12 +81,11 @@ export const useSchedules = () => {
         if (
             timer === undefined ||
             timer.type !== "timer" ||
-            timer.status !== "paused" ||
-            timer.remainingOnPause === null
+            timer.status !== "paused"
         )
             return;
 
-        const newTargetTime = Date.now() + timer.remainingOnPause;
+        const newTargetTime = Date.now() + (timer.remainingOnPause ?? 0);
         const updatedSchedule: TimerSchedule = {
             ...timer,
             status: "running",
