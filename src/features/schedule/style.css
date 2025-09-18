@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+.schedule-item {
+    @apply p-4 rounded-lg shadow-md flex items-center transition-all duration-300;
+}
+
+.schedule-content {
+    @apply flex-grow flex flex-col items-start;
+}
+
+.schedule-header {
+    @apply flex items-center space-x-2 mb-1;
+}
+
+.schedule-name {
+    @apply text-sm font-medium;
+}
+
+.schedule-badge {
+    @apply px-2 py-0.5 text-xs font-semibold rounded-full;
+}
+
+.schedule-time {
+    @apply font-mono text-4xl font-bold tracking-wider;
+}
+
+.schedule-actions {
+    @apply flex items-center space-x-2;
+}
+
+.schedule-action-button {
+    @apply p-2 text-slate-500 rounded-full transition-colors hover:bg-slate-200 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400;
+}

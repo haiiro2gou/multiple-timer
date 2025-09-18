@@ -5,6 +5,7 @@ import { useSchedules } from "../hooks/use-schedules.ts";
 import { useModal } from "../../modal";
 import { DeleteConfirmation } from "./delete-confirmation.tsx";
 import { EditScheduleForm } from "./edit-form.tsx";
+import "../style.css";
 
 const calculateRemainingTime = (
     schedule: TimerSchedule,
@@ -111,53 +112,52 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
         ]
     );
 
+    // Determine styles based on schedule state
+    const isInactive =
+        (schedule.type === "alarm" && !schedule.enabled) ||
+        (schedule.type === "timer" && schedule.status === "paused");
+    const isFinished =
+        schedule.type === "timer" && schedule.status === "finished";
+
+    const displayTime: string = (() => {
+        if (schedule.type === "alarm") return schedule.time;
+        if (isFinished) return "Finished!";
+        return formatTime(calculateRemainingTime(schedule, currentTime));
+    })();
+
     return (
         <li
-            className={`p-4 bg-white rounded-lg shadow-md transition-colors duration-300 ${
-                (
-                    schedule.type === "alarm"
-                        ? !schedule.enabled
-                        : schedule.status === "paused"
-                )
-                    ? "opacity-60"
-                    : ""
-            }`}
+            className={`schedule-item ${isInactive ? "opacity-60" : ""} ${isFinished ? "bg-green-50" : "bg-white"}`}
         >
-            {/* Header: name and type */}
-            <div className="flex justify-between items-start mb-2">
-                <span className="font-medium text-slate-700">
-                    {schedule.name}
-                </span>
-                <span
-                    className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                        schedule.type === "alarm"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-blue-100 text-blue-800"
-                    }`}
-                >
-                    {schedule.type === "timer" ? "Timer" : "Alarm"}
-                </span>
-            </div>
+            <div className="schedule-content">
+                {/* Header: name and type */}
+                <div className="schedule-header">
+                    <span
+                        className={`schedule-name ${isFinished ? "text-green-700" : "text-slate-500"}`}
+                    >
+                        {schedule.name}
+                    </span>
+                    <span
+                        className={`schedule-badge ${
+                            schedule.type === "alarm"
+                                ? "bg-purple-100 text-purple-800"
+                                : "bg-blue-100 text-blue-800"
+                        }`}
+                    >
+                        {schedule.type === "alarm" ? "Alarm" : "Timer"}
+                    </span>
+                </div>
 
-            {/* Remaining time or target time */}
-            <div className="flex items-center">
-                {schedule.type === "alarm" ? (
-                    <strong className="font-mono text-4xl font-bold tracking-wider text-slate-900">
-                        {schedule.time}
-                    </strong>
-                ) : (
-                    <strong className="font-mono text-4xl font-bold tracking-wider text-slate-900">
-                        {schedule.status === "finished"
-                            ? "Finished!"
-                            : formatTime(
-                                  calculateRemainingTime(schedule, currentTime)
-                              )}
-                    </strong>
-                )}
+                {/* Remaining time or target time */}
+                <strong
+                    className={`schedule-time ${isFinished ? "text-green-600" : "text-slate-900"}`}
+                >
+                    {displayTime}
+                </strong>
             </div>
 
             {/* Menu */}
-            <div className="flex items-center space-x-2">
+            <div className="schedule-actions">
                 {schedule.type === "alarm" ? (
                     // Toggle button for alarms
                     <button
@@ -169,6 +169,7 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
                         }`}
                     >
                         <span
+                            aria-hidden="true"
                             className={`bg-white w-6 h-6 rounded-full shadow-md transform duration-300 ease-in-out ${
                                 schedule.enabled ? "translate-x-6" : ""
                             }`}
@@ -180,14 +181,12 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
                         <button
                             type="button"
                             onClick={handlePauseResume}
-                            className="p-2 text-slate-500 rounded-full hover;bg-slate-200"
+                            className="p-2 text-slate-500 rounded-full hover:bg-slate-200"
                             aria-label={
-                                schedule.status === "running"
-                                    ? "Pause timer"
-                                    : "Resume timer"
+                                isInactive ? "Resume timer" : "Pause timer"
                             }
                         >
-                            {schedule.status === "running" ? (
+                            {isInactive ? (
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="h-6 w-6"
@@ -196,7 +195,7 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
                                 >
                                     <path
                                         fillRule="evenodd"
-                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
                                         clipRule="evenodd"
                                     />
                                 </svg>
@@ -209,7 +208,7 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
                                 >
                                     <path
                                         fillRule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
                                         clipRule="evenodd"
                                     />
                                 </svg>
@@ -223,7 +222,7 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
                         type="button"
                         onClick={handleMenuToggle}
                         aria-label="Open menu"
-                        className="p-2 text-slate-500 rounded-full hover:bg-slate-200"
+                        className="schedule-action-button"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
