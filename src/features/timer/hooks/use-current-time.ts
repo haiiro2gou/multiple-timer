@@ -6,7 +6,7 @@ export const useCurrentTime = () => {
     React.useEffect(() => {
         const intervalId = setInterval(() => {
             setCurrentTime(Date.now());
-        }, 1000);
+        }, 50);
 
         return () => {
             clearInterval(intervalId);
