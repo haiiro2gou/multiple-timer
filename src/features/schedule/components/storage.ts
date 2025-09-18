@@ -1,25 +1,25 @@
-import { type TimerData } from "../types.ts";
+import { type Schedule } from "../types.ts";
 
-const STORAGE_KEY = "haiiro2gou-timer";
+const STORAGE_KEY = "haiiro2gou-schedules";
 
-export const loadTimerDatasFromStorage = (): TimerData[] => {
+export const loadSchedulesFromStorage = (): Schedule[] => {
     try {
         // eslint-disable-next-line n/no-unsupported-features/node-builtins
         const serializedData = localStorage.getItem(STORAGE_KEY);
         if (serializedData !== null)
-            return JSON.parse(serializedData) as TimerData[];
+            return JSON.parse(serializedData) as Schedule[];
         return [];
     } catch (e) {
-        console.error("Failed to load timers from storage:", e);
+        console.error("Failed to load schedules from storage:", e);
         return [];
     }
 };
 
-export const saveTimerDatasToStorage = (timerDatas: TimerData[]): void => {
+export const saveSchedulesToStorage = (timerDatas: Schedule[]): void => {
     try {
         // eslint-disable-next-line n/no-unsupported-features/node-builtins
         localStorage.setItem(STORAGE_KEY, JSON.stringify(timerDatas));
     } catch (e) {
-        console.error("Failed to save timers to storage:", e);
+        console.error("Failed to save schedules to storage:", e);
     }
 };

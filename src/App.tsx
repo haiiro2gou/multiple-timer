@@ -1,32 +1,39 @@
 import * as React from "react";
 
 import { CacheProvider } from "./features/cache-provider.tsx";
-import { ModalProvider } from "./features/modal";
+import { ModalProvider, useModal } from "./features/modal";
 import {
-    TimerList,
+    ScheduleList,
     useCurrentTime,
-    useTimers,
+    useSchedules,
     initializeTimerCache,
-} from "./features/timer";
+} from "./features/schedule";
+import { AddScheduleForm } from "./features/schedule/components/add-form.tsx";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const AppContent = () => {
-    const { timers, addTimer, updateTimer } = useTimers();
+    const { schedules, updateSchedule } = useSchedules();
     const currentTime = useCurrentTime();
+    const { showModal, hideModal } = useModal();
 
     React.useEffect(() => {
-        timers.forEach(elem => {
-            if (elem.status === "running" && elem.targetTime <= currentTime)
-                updateTimer({ ...elem, status: "finished" });
+        schedules.forEach(elem => {
+            if (
+                elem.type === "timer" &&
+                elem.status === "running" &&
+                elem.targetTime <= currentTime
+            )
+                updateSchedule({ ...elem, status: "finished" });
         });
-    }, [currentTime, timers, updateTimer]);
+    }, [currentTime, schedules, updateSchedule]);
 
-    const handleAddTimer = () => {
-        addTimer({ name: "New Timer", duration: 5 * 60 * 1000, repeat: false });
-    };
+    const handleAddSchedule = React.useCallback(() => {
+        showModal(<AddScheduleForm onClose={hideModal} />);
+    }, [hideModal, showModal]);
 
     return (
         <>
+            {/* Header */}
             <header className="sticky top-0 z-10 w-fll bg-slate-100/95 backdrop-blue-sm shadow-sm">
                 <div className="px-4 sm:px-6 lg:px-8 py-4">
                     <h1 className="text-4xl font-bold text-start text-slate-900">
@@ -35,21 +42,17 @@ const AppContent = () => {
                 </div>
             </header>
 
+            {/* Main content */}
             <main className="w-full px-4 sm:px-6 lg:px-8 pt-8 pb-28">
-                <TimerList timers={timers} currentTime={currentTime} />
+                <ScheduleList schedules={schedules} currentTime={currentTime} />
             </main>
 
-            <div className="fixed bottom-8 left-8">
+            {/* Floating Add Button */}
+            <div className="fixed bottom-8 right-8 z-10">
                 <button
-                    /* eslint-disable-next-line react/jsx-no-bind */
-                    onClick={handleAddTimer}
-                    aria-label="Add 5-min timer"
-                    className="
-                        w-16 h-16 bg-indigo-600 text-white rounded-full flex items-center justify-center
-                        text-4xl shadow-lg transition-transform duration-200 pb-2.5
-                        hover:bg-indigo-700 hover:scale-110
-                        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
-                    "
+                    onClick={handleAddSchedule}
+                    aria-label="Add Schedule"
+                    className="w-16 h-16 bg-indigo-600 text-white rounded-full flex items-center justify-center text-4xl shadow-lg transition-transform hover:scale-110"
                 >
                     +
                 </button>
@@ -62,7 +65,7 @@ const AppContent = () => {
 export const App = () => (
     <CacheProvider initializer={initializeTimerCache}>
         <ModalProvider>
-            <div className="min-h-screen">
+            <div className="min-h-screen bg-slate-50">
                 <AppContent />
             </div>
         </ModalProvider>

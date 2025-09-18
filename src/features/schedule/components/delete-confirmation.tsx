@@ -1,22 +1,22 @@
 import * as React from "react";
 
 interface DeleteConfirmationProps {
-    timerName: string;
+    scheduleName: string;
     onConfirm: () => void;
     onCancel: () => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const DeleteConfirmation = ({
-    timerName,
+    scheduleName,
     onConfirm,
     onCancel,
 }: DeleteConfirmationProps) => (
     <div className="p-4">
         <h2 className="text-2xl font-bold mb-4 text-slate-800">Delete Timer</h2>
         <p className="text-slate-600">
-            Delete the timer &quot;
-            <span className="font-semibold">{timerName}</span>&quot; ?
+            Delete the schedule &quot;
+            <span className="font-semibold">{scheduleName}</span>&quot; ?
         </p>
         <p className="mt-2 text-sm text-red-600">
             This action cannot be undone.
