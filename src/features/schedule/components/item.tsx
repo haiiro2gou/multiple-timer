@@ -166,13 +166,13 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
                         type="button"
                         onClick={handleToggleAlarm}
                         aria-pressed={schedule.enabled}
-                        className={`w-14 h-8 items-center rounded-full p-1 duration-300 ease-in-out focus:outline-none ${
+                        className={`alarm-toggle ${
                             schedule.enabled ? "bg-indigo-600" : "bg-gray-300"
                         }`}
                     >
                         <span
                             aria-hidden="true"
-                            className={`bg-white w-6 h-6 rounded-full shadow-md transform duration-300 ease-in-out ${
+                            className={`alarm-toggle-handle ${
                                 schedule.enabled ? "translate-x-6" : ""
                             }`}
                         />
