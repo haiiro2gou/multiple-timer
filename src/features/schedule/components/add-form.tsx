@@ -89,10 +89,7 @@ export const AddScheduleForm = ({ onClose }: AddScheduleFormProps) => {
     );
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            className="flex border-b border-slate-200 mb-6"
-        >
+        <form onSubmit={handleSubmit} className="p-4 flex flex-col h-full">
             <h2 className="text-2xl font-bold mb-6 text-slate-800">
                 Add New Schedule
             </h2>
