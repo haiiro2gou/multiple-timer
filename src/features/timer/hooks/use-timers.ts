@@ -12,27 +12,12 @@ export const useTimers = () => {
     const queryClient = useQueryClient();
     const { data: timers = [] } = useQuery<TimerData[]>({
         queryKey: timerQueryKeys.all,
-        queryFn: () => loadTimerDatasFromStorage(),
+        queryFn: loadTimerDatasFromStorage,
         staleTime: Infinity,
     });
 
-    const addTimerMutation = useMutation({
-        mutationFn: async (data: {
-            name: string;
-            duration: number;
-            repeat?: boolean;
-        }) => {
-            const newTimer: TimerData = {
-                id: (uuidv4 as () => string)(),
-                name: data.name,
-                status: "running",
-                duration: data.duration,
-                targetTime: Date.now() + data.duration,
-                remainingOnPause: null,
-                repeat: data.repeat ?? false,
-            };
-
-            const updatedTimers = [...timers, newTimer];
+    const updateTimerMutaiton = useMutation({
+        mutationFn: async (updatedTimers: TimerData[]) => {
             saveTimerDatasToStorage(updatedTimers);
             return Promise.resolve(updatedTimers);
         },
@@ -44,35 +29,36 @@ export const useTimers = () => {
         },
     });
 
-    const updateTimerMutation = useMutation({
-        mutationFn: async (updatedTimer: TimerData) => {
-            const updatedTimers = timers.map(elem =>
-                elem.id === updatedTimer.id ? updatedTimer : elem
-            );
-            saveTimerDatasToStorage(updatedTimers);
-            return Promise.resolve(updatedTimers);
-        },
-        onSuccess: updatedTimers => {
-            queryClient.setQueryData<TimerData[]>(
-                timerQueryKeys.all,
-                updatedTimers
-            );
-        },
-    });
+    const addTimer = (data: {
+        name: string;
+        duration: number;
+        repeat?: boolean;
+    }) => {
+        const newTimer: TimerData = {
+            id: (uuidv4 as () => string)(),
+            name: data.name,
+            status: "running",
+            duration: data.duration,
+            targetTime: Date.now() + data.duration,
+            remainingOnPause: null,
+            repeat: data.repeat ?? false,
+        };
 
-    const deleteTimerMutation = useMutation({
-        mutationFn: async (id: string) => {
-            const updatedTimers = timers.filter(elem => elem.id !== id);
-            saveTimerDatasToStorage(updatedTimers);
-            return Promise.resolve(updatedTimers);
-        },
-        onSuccess: updatedTimers => {
-            queryClient.setQueryData<TimerData[]>(
-                timerQueryKeys.all,
-                updatedTimers
-            );
-        },
-    });
+        const updatedTimers = [...timers, newTimer];
+        updateTimerMutaiton.mutate(updatedTimers);
+    };
+
+    const updateTimer = (updatedTimer: TimerData) => {
+        const updatedTimers = timers.map(elem =>
+            elem.id === updatedTimer.id ? updatedTimer : elem
+        );
+        updateTimerMutaiton.mutate(updatedTimers);
+    };
+
+    const deleteTimer = (id: string) => {
+        const updatedTimers = timers.filter(elem => elem.id !== id);
+        updateTimerMutaiton.mutate(updatedTimers);
+    };
 
     const pauseTimer = (id: string) => {
         const timerToPause = timers.find(elem => elem.id === id);
@@ -85,7 +71,7 @@ export const useTimers = () => {
             status: "paused",
             remainingOnPause: Math.max(remainingTime, 0),
         };
-        updateTimerMutation.mutate(updatedTimer);
+        updateTimer(updatedTimer);
     };
 
     const resumeTimer = (id: string) => {
@@ -104,14 +90,14 @@ export const useTimers = () => {
             targetTime: newTargetTime,
             remainingOnPause: null,
         };
-        updateTimerMutation.mutate(updatedTimer);
+        updateTimer(updatedTimer);
     };
 
     return {
         timers,
-        addTimer: addTimerMutation.mutate,
-        updateTimer: updateTimerMutation.mutate,
-        deleteTimer: deleteTimerMutation.mutate,
+        addTimer,
+        updateTimer,
+        deleteTimer,
         pauseTimer,
         resumeTimer,
     };
