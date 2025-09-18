@@ -52,7 +52,7 @@ const AppContent = () => {
                 <button
                     onClick={handleAddSchedule}
                     aria-label="Add Schedule"
-                    className="w-16 h-16 bg-indigo-600 text-white rounded-full flex items-center justify-center text-4xl shadow-lg transition-transform hover:scale-110"
+                    className="w-16 h-16 pb-2.5 bg-indigo-600 text-white rounded-full flex items-center justify-center text-4xl shadow-lg transition-transform hover:scale-110"
                 >
                     +
                 </button>
