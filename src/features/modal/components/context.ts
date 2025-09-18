@@ -3,6 +3,7 @@ import * as React from "react";
 export interface ModalContextType {
     showModal: (content: React.ReactNode) => void;
     hideModal: () => void;
+    isModalOpen: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

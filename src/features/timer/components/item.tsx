@@ -31,8 +31,10 @@ interface TimerItemProps {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
     const { deleteTimer, pauseTimer, resumeTimer } = useTimers();
-    const { showModal, hideModal } = useModal();
+    const { showModal, hideModal, isModalOpen } = useModal();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [wasRunningBeforeEdit, setWasRunningBeforeEdit] =
+        React.useState(false);
     const menuRef = React.useRef<HTMLDivElement>(null);
 
     const remainingTime = calculateRemainingTime(timer, currentTime);
@@ -53,6 +55,14 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
         };
     }, [isMenuOpen]);
 
+    // Restart timer if it was running before edit when modal closes
+    React.useEffect(() => {
+        if (!isModalOpen && wasRunningBeforeEdit) {
+            if (timer.status === "paused") resumeTimer(timer.id);
+            setWasRunningBeforeEdit(false);
+        }
+    }, [isModalOpen, wasRunningBeforeEdit, timer, resumeTimer]);
+
     const getDisplayTime = () => {
         if (timer.status === "finished") return "Finished!";
         return formatTime(remainingTime);
@@ -70,7 +80,10 @@ export const TimerItem = ({ timer, currentTime }: TimerItemProps) => {
     const handleEdit = React.useCallback(() => {
         setIsMenuOpen(false);
         // Pause the timer if it's running
-        if (timer.status === "running") pauseTimer(timer.id);
+        if (timer.status === "running") {
+            pauseTimer(timer.id);
+            setWasRunningBeforeEdit(true);
+        }
         showModal(<EditTimerForm timer={timer} onClose={hideModal} />);
     }, [timer, pauseTimer, showModal, hideModal]);
 

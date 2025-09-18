@@ -17,10 +17,12 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({
         setModalContent(null);
     }, []);
 
+    const isModalOpen = modalContent !== null;
+
     return (
-        <ModalContext.Provider value={{ showModal, hideModal }}>
+        <ModalContext.Provider value={{ showModal, hideModal, isModalOpen }}>
             {children}
-            <Modal isOpen={modalContent !== null} onClose={hideModal}>
+            <Modal isOpen={isModalOpen} onClose={hideModal}>
                 {modalContent}
             </Modal>
         </ModalContext.Provider>
