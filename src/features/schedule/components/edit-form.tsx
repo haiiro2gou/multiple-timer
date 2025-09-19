@@ -52,19 +52,12 @@ export const EditScheduleForm = ({
             } else {
                 const mins = parseInt(minutes, 10);
                 const secs = parseInt(seconds, 10);
-                if (
-                    Number.isNaN(mins) ||
-                    Number.isNaN(secs) ||
-                    mins < 0 ||
-                    secs < 0 ||
-                    secs >= 60
-                )
-                    return;
 
                 const updatedTimer: Schedule = {
                     ...schedule,
                     name,
                     duration: mins * 60000 + secs * 1000,
+                    targetTime: Date.now() + mins * 60000 + secs * 1000,
                 };
                 updateSchedule(updatedTimer);
             }
