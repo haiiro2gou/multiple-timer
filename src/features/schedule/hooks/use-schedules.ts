@@ -50,7 +50,6 @@ export const useSchedules = () => {
             return Promise.resolve(updatedSchedules);
         },
         onSuccess: updatedSchedules => {
-            console.log("Updated schedules:", JSON.stringify(updatedSchedules));
             queryClient.setQueryData(scheduleQueryKeys.all, updatedSchedules);
         },
     });
