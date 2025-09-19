@@ -115,10 +115,7 @@ export const AddScheduleForm = ({ onClose }: AddScheduleFormProps) => {
             <div className="space-y-6">
                 {/* Name inputs */}
                 <div>
-                    <label
-                        htmlFor="schedule-name"
-                        className="block text-sm font-medium text-slate-600 mb-1"
-                    >
+                    <label htmlFor="schedule-name" className="form-label">
                         Name
                     </label>
                     <input
@@ -126,7 +123,7 @@ export const AddScheduleForm = ({ onClose }: AddScheduleFormProps) => {
                         type="text"
                         value={name}
                         onChange={handleNameChange}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="form-input"
                     />
                 </div>
             </div>
@@ -134,10 +131,7 @@ export const AddScheduleForm = ({ onClose }: AddScheduleFormProps) => {
             {/* Conditional Inputs */}
             {type === "alarm" ? (
                 <div>
-                    <label
-                        htmlFor="alarm-time"
-                        className="block text-sm font-medium text-slate-600 mb-1"
-                    >
+                    <label htmlFor="alarm-time" className="form-label">
                         Time
                     </label>
                     <input
@@ -145,16 +139,13 @@ export const AddScheduleForm = ({ onClose }: AddScheduleFormProps) => {
                         type="time"
                         value={time}
                         onChange={handleTimeChange}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm"
+                        className="form-input"
                         required
                     />
                 </div>
             ) : (
                 <div>
-                    <label
-                        htmlFor="timer-minutes"
-                        className="block text-sm font-medium text-slate-600 mb-1"
-                    >
+                    <label htmlFor="timer-minutes" className="form-label">
                         Duration
                     </label>
                     <div className="flex items-center space-x-2">
@@ -165,7 +156,7 @@ export const AddScheduleForm = ({ onClose }: AddScheduleFormProps) => {
                             value={minutes}
                             onChange={handleMinutesChange}
                             aria-label="Minutes"
-                            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm"
+                            className="form-input"
                         />
                         <span className="text-slate-500">:</span>
                         <input
@@ -175,7 +166,7 @@ export const AddScheduleForm = ({ onClose }: AddScheduleFormProps) => {
                             value={seconds}
                             onChange={handleSecondsChange}
                             aria-label="Seconds"
-                            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm"
+                            className="form-input"
                         />
                     </div>
                 </div>
@@ -186,14 +177,11 @@ export const AddScheduleForm = ({ onClose }: AddScheduleFormProps) => {
                 <button
                     type="button"
                     onClick={onClose}
-                    className="px-4 py-2 bg-white border border-slate-300 text-slate-700 font-semibold rounded-lg shadow-sm hover:bg-slate-50"
+                    className="button button-secondary"
                 >
                     Cancel
                 </button>
-                <button
-                    type="submit"
-                    className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700"
-                >
+                <button type="submit" className="button button-primary">
                     Save
                 </button>
             </div>

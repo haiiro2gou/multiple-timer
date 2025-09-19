@@ -106,10 +106,7 @@ export const EditScheduleForm = ({
             <div className="space-y-4">
                 {/* Name inputs */}
                 <div>
-                    <label
-                        htmlFor="schedule-name"
-                        className="block text-sm font-medium text-slate-600 mb-1"
-                    >
+                    <label htmlFor="schedule-name" className="form-label">
                         Timer Name
                     </label>
                     <input
@@ -117,7 +114,7 @@ export const EditScheduleForm = ({
                         type="text"
                         value={name}
                         onChange={handleNameChange}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="form-input"
                     />
                 </div>
 
@@ -125,10 +122,7 @@ export const EditScheduleForm = ({
                 {schedule.type === "alarm" ? (
                     // Alarm inputs
                     <div>
-                        <label
-                            htmlFor="alarm-time"
-                            className="block text-sm font-medium text-slate-600 mb-1"
-                        >
+                        <label htmlFor="alarm-time" className="form-label">
                             Time
                         </label>
                         <input
@@ -136,18 +130,15 @@ export const EditScheduleForm = ({
                             type="time"
                             value={time}
                             onChange={handleTimeChange}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm"
+                            className="form-input"
                             required
                         />
                     </div>
                 ) : (
                     // Timer inputs
                     <div>
-                        <label
-                            htmlFor="timer-minutes"
-                            className="block text-sm font-medium text-slate-600 mb-1"
-                        >
-                            期間
+                        <label htmlFor="timer-minutes" className="form-label">
+                            Duration
                         </label>
                         <div className="flex items-center space-x-2">
                             <input
@@ -156,7 +147,7 @@ export const EditScheduleForm = ({
                                 min="0"
                                 value={minutes}
                                 onChange={handleMinutesChange}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm"
+                                className="form-input"
                                 aria-label="Minutes"
                             />
                             <span className="text-slate-500">:</span>
@@ -166,7 +157,7 @@ export const EditScheduleForm = ({
                                 max="59"
                                 value={seconds}
                                 onChange={handleSecondsChange}
-                                className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm"
+                                className="form-input"
                                 aria-label="Seconds"
                             />
                         </div>
@@ -178,14 +169,11 @@ export const EditScheduleForm = ({
                 <button
                     type="button"
                     onClick={onClose}
-                    className="px-4 py-2 bg-white border border-slate-300 text-slate-700 font-semibold rounded-lg shadow-sm hover:bg-slate-50"
+                    className="button button-secondary"
                 >
                     Cancel
                 </button>
-                <button
-                    type="submit"
-                    className="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700"
-                >
+                <button type="submit" className="button button-primary">
                     Save and Restart
                 </button>
             </div>
