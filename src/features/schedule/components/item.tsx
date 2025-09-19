@@ -31,8 +31,13 @@ interface ScheduleItemProps {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
-    const { deleteSchedule, pauseTimer, resumeTimer, toggleAlarm } =
-        useSchedules();
+    const {
+        deleteSchedule,
+        pauseTimer,
+        resumeTimer,
+        restartTimer,
+        toggleAlarm,
+    } = useSchedules();
     const { showModal, hideModal } = useModal();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     React.useState(false);
@@ -62,6 +67,11 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
         if (schedule.status === "running") pauseTimer(schedule.id);
         else if (schedule.status === "paused") resumeTimer(schedule.id);
     }, [schedule, pauseTimer, resumeTimer]);
+
+    const handleRestart = React.useCallback(() => {
+        if (schedule.type !== "timer") return;
+        restartTimer(schedule.id);
+    }, [schedule, restartTimer]);
 
     const handleMenuToggle = React.useCallback(() => {
         setIsMenuOpen(prev => !prev);
@@ -124,6 +134,95 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
         if (isFinished) return "Finished!";
         return formatTime(calculateRemainingTime(schedule, currentTime));
     })();
+    const displayButton: React.ReactNode = (() => {
+        if (schedule.type === "alarm") {
+            return (
+                <button
+                    type="button"
+                    onClick={handleToggleAlarm}
+                    aria-pressed={schedule.enabled}
+                    className={`alarm-toggle ${
+                        schedule.enabled ? "bg-indigo-600" : "bg-gray-300"
+                    }`}
+                >
+                    <span
+                        aria-hidden="true"
+                        className={`alarm-toggle-handle ${
+                            schedule.enabled ? "translate-x-6" : ""
+                        }`}
+                    />
+                </button>
+            );
+        } else {
+            switch (schedule.status) {
+                case "running":
+                    return (
+                        <button
+                            onClick={handlePauseResume}
+                            aria-label="Pause timer"
+                            className="schedule-action-button"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </button>
+                    );
+                case "paused":
+                    return (
+                        <button
+                            onClick={handlePauseResume}
+                            aria-label="Resume timer"
+                            className="schedule-action-button"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </button>
+                    );
+                case "finished":
+                    if (schedule.repeat) return;
+                    return (
+                        <button
+                            type="button"
+                            onClick={handleRestart}
+                            aria-label="Restart timer"
+                            className="schedule-action-button"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </button>
+                    );
+            }
+        }
+    })();
 
     return (
         <li
@@ -160,64 +259,9 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
 
             {/* Menu */}
             <div className="schedule-actions">
-                {schedule.type === "alarm" ? (
-                    // Toggle button for alarms
-                    <button
-                        type="button"
-                        onClick={handleToggleAlarm}
-                        aria-pressed={schedule.enabled}
-                        className={`alarm-toggle ${
-                            schedule.enabled ? "bg-indigo-600" : "bg-gray-300"
-                        }`}
-                    >
-                        <span
-                            aria-hidden="true"
-                            className={`alarm-toggle-handle ${
-                                schedule.enabled ? "translate-x-6" : ""
-                            }`}
-                        />
-                    </button>
-                ) : (
-                    // Pause / resume button for timers
-                    <>
-                        <button
-                            type="button"
-                            onClick={handlePauseResume}
-                            className="p-2 text-slate-500 rounded-full hover:bg-slate-200"
-                            aria-label={
-                                isInactive ? "Resume timer" : "Pause timer"
-                            }
-                        >
-                            {isInactive ? (
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            ) : (
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            )}
-                        </button>
-                    </>
-                )}
+                {/* Toggle button for alarms / timers */}
+                {displayButton}
+
                 {/* Menu button */}
                 <div className="relative" ref={menuRef}>
                     <button

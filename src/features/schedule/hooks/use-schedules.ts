@@ -95,6 +95,20 @@ export const useSchedules = () => {
         updateSchedule(updatedSchedule);
     };
 
+    const restartTimer = (id: string) => {
+        const timer = schedules.find(elem => elem.id === id);
+        if (timer === undefined || timer.type !== "timer") return;
+
+        const newTargetTime = Date.now() + timer.duration;
+        const updatedSchedule: TimerSchedule = {
+            ...timer,
+            status: "running",
+            targetTime: newTargetTime,
+            remainingOnPause: null,
+        };
+        updateSchedule(updatedSchedule);
+    };
+
     // Toggle alarm enabled/disabled
     const toggleAlarm = (id: string) => {
         const alarm = schedules.find(elem => elem.id === id);
@@ -114,6 +128,7 @@ export const useSchedules = () => {
         deleteSchedule,
         pauseTimer,
         resumeTimer,
+        restartTimer,
         toggleAlarm,
     };
 };
