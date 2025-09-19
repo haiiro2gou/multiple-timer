@@ -38,9 +38,9 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
         restartTimer,
         toggleAlarm,
     } = useSchedules();
-    const { showModal, hideModal } = useModal();
+    const { showModal, hideModal, isModalOpen } = useModal();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    React.useState(false);
+    const [wasEnabledOnEdit, setWasEnabledOnEdit] = React.useState(false);
     const menuRef = React.useRef<HTMLDivElement>(null);
 
     // Close menu when clicking outside
@@ -57,6 +57,22 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [isMenuOpen]);
+    React.useEffect(() => {
+        if (isModalOpen) return;
+
+        if (schedule.type === "alarm" && wasEnabledOnEdit) {
+            toggleAlarm(schedule.id);
+            setWasEnabledOnEdit(false);
+        }
+        if (
+            schedule.type === "timer" &&
+            schedule.status === "paused" &&
+            wasEnabledOnEdit
+        ) {
+            resumeTimer(schedule.id);
+            setWasEnabledOnEdit(false);
+        }
+    }, [isModalOpen, resumeTimer, schedule, toggleAlarm, wasEnabledOnEdit]);
 
     const handleToggleAlarm = React.useCallback(() => {
         if (schedule.type === "alarm") toggleAlarm(schedule.id);
@@ -80,11 +96,15 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
     const handleEdit = React.useCallback(() => {
         setIsMenuOpen(false);
         // Pause timer if running
-        if (schedule.type === "timer" && schedule.status === "running")
+        if (schedule.type === "timer" && schedule.status === "running") {
+            setWasEnabledOnEdit(true);
             pauseTimer(schedule.id);
+        }
         // Disable alarm if enabled
-        if (schedule.type === "alarm" && schedule.enabled)
+        if (schedule.type === "alarm" && schedule.enabled) {
+            setWasEnabledOnEdit(true);
             toggleAlarm(schedule.id);
+        }
 
         showModal(<EditScheduleForm schedule={schedule} onClose={hideModal} />);
     }, [hideModal, pauseTimer, schedule, showModal, toggleAlarm]);
