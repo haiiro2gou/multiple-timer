@@ -56,8 +56,10 @@ export const EditScheduleForm = ({
                 const updatedTimer: Schedule = {
                     ...schedule,
                     name,
+                    status: "running",
                     duration: mins * 60000 + secs * 1000,
                     targetTime: Date.now() + mins * 60000 + secs * 1000,
+                    remainingOnPause: null,
                 };
                 updateSchedule(updatedTimer);
             }

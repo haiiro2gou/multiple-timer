@@ -20,46 +20,62 @@ export const useSchedules = () => {
         staleTime: Infinity,
     });
 
-    // Common mutation for adding, updating, and deleting schedules
-    const updateScheduleMutation = useMutation({
-        mutationFn: async (updatedSchedules: Schedule[]) => {
+    // Common schedule mutation
+    const addScheduleMutation = useMutation({
+        mutationFn: async (
+            data: Omit<AlarmSchedule, "id"> | Omit<TimerSchedule, "id">
+        ) => {
+            const newSchedule: Schedule = { ...data, id: uuidv4() };
+            const currentSchedules =
+                queryClient.getQueryData<Schedule[]>(scheduleQueryKeys.all) ??
+                [];
+            const updatedSchedules = [...currentSchedules, newSchedule];
             saveSchedulesToStorage(updatedSchedules);
             return Promise.resolve(updatedSchedules);
         },
         onSuccess: updatedSchedules => {
-            queryClient.setQueryData<Schedule[]>(
-                scheduleQueryKeys.all,
-                updatedSchedules
-            );
+            queryClient.setQueryData(scheduleQueryKeys.all, updatedSchedules);
         },
     });
 
-    const addSchedule = (
-        data: Omit<AlarmSchedule, "id"> | Omit<TimerSchedule, "id">
-    ) => {
-        const newSchedule: Schedule = {
-            ...data,
-            id: uuidv4(),
-        };
-        const updatedSchedules = [...schedules, newSchedule];
-        updateScheduleMutation.mutate(updatedSchedules);
-    };
+    const updateScheduleMutation = useMutation({
+        mutationFn: async (updatedSchedule: Schedule) => {
+            const currentSchedules =
+                queryClient.getQueryData<Schedule[]>(scheduleQueryKeys.all) ??
+                [];
+            const updatedSchedules = currentSchedules.map(schedule =>
+                schedule.id === updatedSchedule.id ? updatedSchedule : schedule
+            );
+            saveSchedulesToStorage(updatedSchedules);
+            return Promise.resolve(updatedSchedules);
+        },
+        onSuccess: updatedSchedules => {
+            console.log("Updated schedules:", JSON.stringify(updatedSchedules));
+            queryClient.setQueryData(scheduleQueryKeys.all, updatedSchedules);
+        },
+    });
 
-    const updateSchedule = (updatedSchedule: Schedule) => {
-        const updatedSchedules = schedules.map(elem =>
-            elem.id === updatedSchedule.id ? updatedSchedule : elem
-        );
-        updateScheduleMutation.mutate(updatedSchedules);
-    };
-
-    const deleteSchedule = (id: string) => {
-        const updatedSchedules = schedules.filter(elem => elem.id !== id);
-        updateScheduleMutation.mutate(updatedSchedules);
-    };
+    const deleteScheduleMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const currentSchedules =
+                queryClient.getQueryData<Schedule[]>(scheduleQueryKeys.all) ??
+                [];
+            const updatedSchedules = currentSchedules.filter(
+                schedule => schedule.id !== id
+            );
+            saveSchedulesToStorage(updatedSchedules);
+            return Promise.resolve(updatedSchedules);
+        },
+        onSuccess: updatedSchedules => {
+            queryClient.setQueryData(scheduleQueryKeys.all, updatedSchedules);
+        },
+    });
 
     // Pause and resume functions for timers
     const pauseTimer = (id: string) => {
-        const timer = schedules.find(elem => elem.id === id);
+        const currentSchedules =
+            queryClient.getQueryData<Schedule[]>(scheduleQueryKeys.all) ?? [];
+        const timer = currentSchedules.find(elem => elem.id === id);
         if (
             timer === undefined ||
             timer.type !== "timer" ||
@@ -73,11 +89,13 @@ export const useSchedules = () => {
             status: "paused",
             remainingOnPause: Math.max(remaining, 0),
         };
-        updateSchedule(updatedSchedule);
+        updateScheduleMutation.mutate(updatedSchedule);
     };
 
     const resumeTimer = (id: string) => {
-        const timer = schedules.find(elem => elem.id === id);
+        const currentSchedules =
+            queryClient.getQueryData<Schedule[]>(scheduleQueryKeys.all) ?? [];
+        const timer = currentSchedules.find(elem => elem.id === id);
         if (
             timer === undefined ||
             timer.type !== "timer" ||
@@ -92,11 +110,13 @@ export const useSchedules = () => {
             targetTime: newTargetTime,
             remainingOnPause: null,
         };
-        updateSchedule(updatedSchedule);
+        updateScheduleMutation.mutate(updatedSchedule);
     };
 
     const restartTimer = (id: string) => {
-        const timer = schedules.find(elem => elem.id === id);
+        const currentSchedules =
+            queryClient.getQueryData<Schedule[]>(scheduleQueryKeys.all) ?? [];
+        const timer = currentSchedules.find(elem => elem.id === id);
         if (timer === undefined || timer.type !== "timer") return;
 
         const newTargetTime = Date.now() + timer.duration;
@@ -106,26 +126,28 @@ export const useSchedules = () => {
             targetTime: newTargetTime,
             remainingOnPause: null,
         };
-        updateSchedule(updatedSchedule);
+        updateScheduleMutation.mutate(updatedSchedule);
     };
 
     // Toggle alarm enabled/disabled
     const toggleAlarm = (id: string) => {
-        const alarm = schedules.find(elem => elem.id === id);
+        const currentSchedules =
+            queryClient.getQueryData<Schedule[]>(scheduleQueryKeys.all) ?? [];
+        const alarm = currentSchedules.find(elem => elem.id === id);
         if (alarm === undefined || alarm.type !== "alarm") return;
 
         const updatedSchedule: AlarmSchedule = {
             ...alarm,
             enabled: !alarm.enabled,
         };
-        updateSchedule(updatedSchedule);
+        updateScheduleMutation.mutate(updatedSchedule);
     };
 
     return {
         schedules,
-        addSchedule,
-        updateSchedule,
-        deleteSchedule,
+        addSchedule: addScheduleMutation.mutate,
+        updateSchedule: updateScheduleMutation.mutate,
+        deleteSchedule: deleteScheduleMutation.mutate,
         pauseTimer,
         resumeTimer,
         restartTimer,
