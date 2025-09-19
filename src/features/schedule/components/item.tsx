@@ -1,10 +1,11 @@
 import * as React from "react";
 
+import { WEEK_DAYS } from "../../../constants";
+import { useModal } from "../../modal";
 import { type Schedule, type TimerSchedule } from "../types.ts";
 import { useSchedules } from "../hooks/use-schedules.ts";
-import { useModal } from "../../modal";
+import { ScheduleForm } from "./form.tsx";
 import { DeleteConfirmation } from "./delete-confirmation.tsx";
-import { EditScheduleForm } from "./edit-form.tsx";
 import "../style.css";
 
 const calculateRemainingTime = (
@@ -78,7 +79,7 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
 
     const handleEdit = React.useCallback(() => {
         setIsMenuOpen(false);
-        showModal(<EditScheduleForm schedule={schedule} onClose={hideModal} />);
+        showModal(<ScheduleForm schedule={schedule} onClose={hideModal} />);
     }, [hideModal, schedule, showModal]);
 
     const confirmDelete = React.useCallback(() => {
@@ -126,6 +127,19 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
         if (isFinished) return "Finished!";
         return formatTime(calculateRemainingTime(schedule, currentTime));
     })();
+    const repeatInfo = () => {
+        if (schedule.type === "alarm") {
+            const activeDays = schedule.days
+                .map((active, index) => (active ? WEEK_DAYS[index] : ""))
+                .filter(day => day !== "");
+            if (activeDays.length === 0) return "One-time";
+            if (activeDays.length === 7) return "Every day";
+            return activeDays.join(", ");
+        } else {
+            if (schedule.repeat) return "Repeats";
+            return null;
+        }
+    };
     const displayButton: React.ReactNode = (() => {
         if (schedule.type === "alarm") {
             return (
@@ -247,6 +261,11 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
                 >
                     {displayTime}
                 </strong>
+
+                {/* Repeat info */}
+                <div className="text-xs text-slate-400 mt-1 h-4">
+                    {repeatInfo()}
+                </div>
             </div>
 
             {/* Menu */}

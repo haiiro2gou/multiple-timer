@@ -4,31 +4,51 @@ import { CacheProvider } from "./features/cache-provider.tsx";
 import { ModalProvider, useModal } from "./features/modal";
 import {
     ScheduleList,
+    ScheduleForm,
     useCurrentTime,
     useSchedules,
     initializeTimerCache,
 } from "./features/schedule";
-import { AddScheduleForm } from "./features/schedule/components/add-form.tsx";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const AppContent = () => {
-    const { schedules, updateSchedule } = useSchedules();
+    const { schedules, updateSchedule, restartTimer } = useSchedules();
     const currentTime = useCurrentTime();
     const { showModal, hideModal } = useModal();
+    const lastTriggeredTimeRef = React.useRef<string | null>(null);
 
     React.useEffect(() => {
+        const now = new Date(currentTime);
+        const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
+        const currentTimeStr = `${now.getHours().toString().padStart(2, "0")}:${now
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}`; // "HH:MM"
+
         schedules.forEach(elem => {
+            if (
+                elem.type === "alarm" &&
+                elem.enabled &&
+                elem.time === currentTimeStr &&
+                elem.days[dayOfWeek] &&
+                lastTriggeredTimeRef.current !== currentTimeStr
+            ) {
+                alert(`Alarm: ${elem.name}`);
+                lastTriggeredTimeRef.current = currentTimeStr;
+            }
             if (
                 elem.type === "timer" &&
                 elem.status === "running" &&
                 elem.targetTime <= currentTime
-            )
-                updateSchedule({ ...elem, status: "finished" });
+            ) {
+                if (elem.repeat) restartTimer(elem.id);
+                else updateSchedule({ ...elem, status: "finished" });
+            }
         });
-    }, [currentTime, schedules, updateSchedule]);
+    }, [currentTime, restartTimer, schedules, updateSchedule]);
 
     const handleAddSchedule = React.useCallback(() => {
-        showModal(<AddScheduleForm onClose={hideModal} />);
+        showModal(<ScheduleForm onClose={hideModal} />);
     }, [hideModal, showModal]);
 
     return (

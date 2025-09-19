@@ -1,5 +1,5 @@
 export type * from "./types.ts";
-export * from "./components/add-form.tsx";
+export * from "./components/form.tsx";
 export * from "./components/delete-confirmation.tsx";
 export * from "./components/initializer.ts";
 export * from "./components/item.tsx";
