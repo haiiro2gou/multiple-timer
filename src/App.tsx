@@ -19,22 +19,43 @@ const AppContent = () => {
 
     React.useEffect(() => {
         const now = new Date(currentTime);
-        const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
-        const currentTimeStr = `${now.getHours().toString().padStart(2, "0")}:${now
-            .getMinutes()
-            .toString()
-            .padStart(2, "0")}`; // "HH:MM"
 
         schedules.forEach(elem => {
-            if (
-                elem.type === "alarm" &&
-                elem.enabled &&
-                elem.time === currentTimeStr &&
-                elem.days[dayOfWeek] &&
-                lastTriggeredTimeRef.current !== currentTimeStr
-            ) {
-                alert(`Alarm: ${elem.name}`);
-                lastTriggeredTimeRef.current = currentTimeStr;
+            if (elem.type === "alarm" && elem.enabled) {
+                const isRepeating = elem.days.some(day => day);
+                const [alarmHour, alarmMinute] = elem.time
+                    .split(":")
+                    .map(Number);
+
+                if (isRepeating) {
+                    const dayOfWeek = now.getDay(); // 0 (Sun) to 6 (Sat)
+                    const currentTimeStr = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`; // "HH:MM"
+
+                    if (
+                        elem.days[dayOfWeek] &&
+                        elem.time === currentTimeStr &&
+                        lastTriggeredTimeRef.current !== currentTimeStr
+                    ) {
+                        alert(`Alarm: ${elem.name}`);
+                        lastTriggeredTimeRef.current = currentTimeStr;
+                    }
+                } else {
+                    const prevTime = new Date(currentTime - 50);
+
+                    // Calculate the target time
+                    const targetTime = new Date(now);
+                    targetTime.setHours(alarmHour, alarmMinute, 0, 0);
+                    if (targetTime.getTime() < prevTime.getTime())
+                        targetTime.setDate(targetTime.getDate() + 1);
+
+                    if (
+                        targetTime.getTime() > prevTime.getTime() &&
+                        targetTime.getTime() <= now.getTime()
+                    ) {
+                        alert(`Alarm: ${elem.name}`);
+                        updateSchedule({ ...elem, enabled: false });
+                    }
+                }
             }
             if (
                 elem.type === "timer" &&
