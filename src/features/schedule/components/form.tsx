@@ -153,11 +153,13 @@ export const ScheduleForm = ({ schedule, onClose }: ScheduleFormProps) => {
     return (
         <form onSubmit={handleSubmit} className="p-4 flex flex-col h-full">
             <h2 className="text-2xl font-bold mb-6 text-slate-800">
-                {schedule !== undefined ? "Edit Schedule" : "New Schedule"}
+                {schedule === undefined
+                    ? "New Schedule"
+                    : `Edit ${schedule.type === "alarm" ? "Alarm" : "Timer"}`}
             </h2>
 
             {/* Type Selector */}
-            {schedule !== undefined ? (
+            {schedule === undefined ? (
                 <div className="flex border-b border-slate-200 mb-6">
                     <button
                         type="button"
