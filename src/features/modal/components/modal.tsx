@@ -9,11 +9,7 @@ interface ModalProps {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const Modal: React.FC<ModalProps> = ({
-    isOpen,
-    onClose,
-    children,
-}: ModalProps) => {
+export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
     React.useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") onClose();
@@ -26,16 +22,9 @@ export const Modal: React.FC<ModalProps> = ({
         };
     }, [isOpen, onClose]);
 
-    const handleOverlayClick = React.useCallback(
-        (e: React.MouseEvent) => {
+    const handleOverlayMouseDown = React.useCallback(
+        (e: React.MouseEvent<HTMLDivElement>) => {
             if (e.target === e.currentTarget) onClose();
-        },
-        [onClose]
-    );
-    const handleOverlayKeyDown = React.useCallback(
-        (e: React.KeyboardEvent) => {
-            if (e.key === "Enter" || e.key === " ")
-                if (e.target === e.currentTarget) onClose();
         },
         [onClose]
     );
@@ -45,8 +34,7 @@ export const Modal: React.FC<ModalProps> = ({
     return (
         <div
             className="modal-overlay"
-            onClick={handleOverlayClick}
-            onKeyDown={handleOverlayKeyDown}
+            onMouseDown={handleOverlayMouseDown}
             role="button"
             tabIndex={0}
         >
