@@ -26,14 +26,24 @@ const AppContent = () => {
 
         // Function to trigger an event
         const triggerEvent = (schedule: Schedule) => {
+            if (triggeredIdsRef.current.has(schedule.id)) return;
+
             triggeredIdsRef.current.add(schedule.id);
 
+            // Immediate feedback
+            alert(
+                `${
+                    schedule.type === "alarm" ? "Alarm" : "Timer"
+                }: ${schedule.name} triggered!`
+            );
+            setFlashingId(schedule.id);
+
+            if (schedule.type === "timer" && schedule.repeat)
+                restartTimer(schedule.id);
+
+            // Delay to remove the flashing effect
             if (flashTimeoutRef.current !== null)
                 clearTimeout(flashTimeoutRef.current);
-            setFlashingId(schedule.id);
-            alert(
-                `${schedule.type === "alarm" ? "Alarm" : "Timer"}: ${schedule.name}`
-            );
 
             flashTimeoutRef.current = window.setTimeout(() => {
                 setFlashingId(null);
@@ -43,14 +53,15 @@ const AppContent = () => {
                     !schedule.days.some(elem => elem)
                 )
                     updateSchedule({ ...schedule, enabled: false });
-                if (schedule.type === "timer") {
-                    if (schedule.repeat) {
-                        triggeredIdsRef.current.delete(schedule.id);
-                        restartTimer(schedule.id);
-                    } else {
-                        updateSchedule({ ...schedule, status: "finished" });
-                    }
-                }
+                if (schedule.type === "timer" && !schedule.repeat)
+                    updateSchedule({ ...schedule, status: "finished" });
+
+                if (
+                    (schedule.type === "alarm" &&
+                        schedule.days.some(elem => elem)) ||
+                    (schedule.type === "timer" && schedule.repeat)
+                )
+                    triggeredIdsRef.current.delete(schedule.id);
             }, 3000);
         };
 
