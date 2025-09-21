@@ -62,8 +62,12 @@ const AppContent = () => {
                 elem.status === "running" &&
                 elem.targetTime <= currentTime
             ) {
-                if (elem.repeat) restartTimer(elem.id);
-                else updateSchedule({ ...elem, status: "finished" });
+                if (elem.repeat) {
+                    alert(`Timer Finished: ${elem.name}`);
+                    restartTimer(elem.id);
+                } else {
+                    updateSchedule({ ...elem, status: "finished" });
+                }
             }
         });
     }, [currentTime, restartTimer, schedules, updateSchedule]);
