@@ -129,7 +129,7 @@ export const ScheduleItem = ({
 
     const displayTime: string = (() => {
         if (schedule.type === "alarm") return schedule.time;
-        if (isFinished) return "Finished!";
+        if (isFlashing || schedule.status === "finished") return "Finished!";
         return formatTime(calculateRemainingTime(schedule, currentTime));
     })();
     const repeatInfo = () => {
