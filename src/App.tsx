@@ -3,6 +3,7 @@ import * as React from "react";
 import { CacheProvider } from "./features/cache-provider.tsx";
 import { ModalProvider, useModal } from "./features/modal";
 import {
+    type Schedule,
     ScheduleList,
     ScheduleForm,
     useCurrentTime,
@@ -16,13 +17,48 @@ const AppContent = () => {
     const currentTime = useCurrentTime();
     const { showModal, hideModal } = useModal();
     const lastTriggeredTimeRef = React.useRef<string | null>(null);
+    const [flashingId, setFlashingId] = React.useState<string | null>(null);
+    const flashTimeoutRef = React.useRef<number | null>(null);
+    const triggeredIdsRef = React.useRef<Set<string>>(new Set());
 
     React.useEffect(() => {
         const now = new Date(currentTime);
 
+        // Function to trigger an event
+        const triggerEvent = (schedule: Schedule) => {
+            triggeredIdsRef.current.add(schedule.id);
+
+            if (flashTimeoutRef.current !== null)
+                clearTimeout(flashTimeoutRef.current);
+            setFlashingId(schedule.id);
+            alert(
+                `${schedule.type === "alarm" ? "Alarm" : "Timer"}: ${schedule.name}`
+            );
+
+            flashTimeoutRef.current = window.setTimeout(() => {
+                setFlashingId(null);
+
+                if (
+                    schedule.type === "alarm" &&
+                    !schedule.days.some(elem => elem)
+                )
+                    updateSchedule({ ...schedule, enabled: false });
+                if (schedule.type === "timer") {
+                    if (schedule.repeat) {
+                        triggeredIdsRef.current.delete(schedule.id);
+                        restartTimer(schedule.id);
+                    } else {
+                        updateSchedule({ ...schedule, status: "finished" });
+                    }
+                }
+            }, 3000);
+        };
+
         schedules.forEach(elem => {
+            if (triggeredIdsRef.current.has(elem.id)) return;
+
             if (elem.type === "alarm" && elem.enabled) {
-                const isRepeating = elem.days.some(day => day);
+                const isRepeating = elem.days.some(elem => elem);
                 const [alarmHour, alarmMinute] = elem.time
                     .split(":")
                     .map(Number);
@@ -36,7 +72,7 @@ const AppContent = () => {
                         elem.time === currentTimeStr &&
                         lastTriggeredTimeRef.current !== currentTimeStr
                     ) {
-                        alert(`Alarm: ${elem.name}`);
+                        triggerEvent(elem);
                         lastTriggeredTimeRef.current = currentTimeStr;
                     }
                 } else {
@@ -51,24 +87,16 @@ const AppContent = () => {
                     if (
                         targetTime.getTime() > prevTime.getTime() &&
                         targetTime.getTime() <= now.getTime()
-                    ) {
-                        alert(`Alarm: ${elem.name}`);
-                        updateSchedule({ ...elem, enabled: false });
-                    }
+                    )
+                        triggerEvent(elem);
                 }
             }
             if (
                 elem.type === "timer" &&
                 elem.status === "running" &&
                 elem.targetTime <= currentTime
-            ) {
-                if (elem.repeat) {
-                    alert(`Timer Finished: ${elem.name}`);
-                    restartTimer(elem.id);
-                } else {
-                    updateSchedule({ ...elem, status: "finished" });
-                }
-            }
+            )
+                triggerEvent(elem);
         });
     }, [currentTime, restartTimer, schedules, updateSchedule]);
 
@@ -89,7 +117,11 @@ const AppContent = () => {
 
             {/* Main content */}
             <main className="w-full px-4 sm:px-6 lg:px-8 pt-8 pb-28">
-                <ScheduleList schedules={schedules} currentTime={currentTime} />
+                <ScheduleList
+                    schedules={schedules}
+                    currentTime={currentTime}
+                    flashingId={flashingId}
+                />
             </main>
 
             {/* Floating Add Button */}

@@ -6,10 +6,15 @@ import { ScheduleItem } from "./item.tsx";
 interface ScheduleListProps {
     schedules: Schedule[];
     currentTime: number;
+    flashingId: string | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const ScheduleList = ({ schedules, currentTime }: ScheduleListProps) => {
+export const ScheduleList = ({
+    schedules,
+    currentTime,
+    flashingId,
+}: ScheduleListProps) => {
     if (schedules.length === 0) {
         return (
             <p className="mt-12 text-center text-slate-500">
@@ -25,6 +30,7 @@ export const ScheduleList = ({ schedules, currentTime }: ScheduleListProps) => {
                     key={elem.id}
                     schedule={elem}
                     currentTime={currentTime}
+                    isFlashing={elem.id === flashingId}
                 />
             ))}
         </ul>

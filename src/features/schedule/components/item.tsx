@@ -8,6 +8,12 @@ import { ScheduleForm } from "./form.tsx";
 import { DeleteConfirmation } from "./delete-confirmation.tsx";
 import "../style.css";
 
+interface ScheduleItemProps {
+    schedule: Schedule;
+    currentTime: number;
+    isFlashing: boolean;
+}
+
 const calculateRemainingTime = (
     schedule: TimerSchedule,
     currentTime: number
@@ -25,13 +31,12 @@ const formatTime = (ms: number): string => {
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
-interface ScheduleItemProps {
-    schedule: Schedule;
-    currentTime: number;
-}
-
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
+export const ScheduleItem = ({
+    schedule,
+    currentTime,
+    isFlashing,
+}: ScheduleItemProps) => {
     const {
         deleteSchedule,
         pauseTimer,
@@ -232,7 +237,7 @@ export const ScheduleItem = ({ schedule, currentTime }: ScheduleItemProps) => {
 
     return (
         <li
-            className={`schedule-item ${isFinished ? "bg-green-50" : "bg-white"}`}
+            className={`schedule-item ${isFinished ? "bg-green-50" : "bg-white"} ${isFlashing ? "animate-flash" : ""}`}
         >
             <div
                 className={`schedule-content ${isInactive ? "opacity-60" : ""}`}
