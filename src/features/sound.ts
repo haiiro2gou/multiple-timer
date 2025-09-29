@@ -1,50 +1,61 @@
-export const initAudio = (): AudioContext | null => {
-    try {
-        if (typeof window.AudioContext !== "undefined") {
-            return new window.AudioContext();
-        } else if (
-            typeof (window as { webkitAudioContext?: typeof AudioContext })
-                .webkitAudioContext !== "undefined"
-        ) {
-            return new (
-                window as unknown as { webkitAudioContext: typeof AudioContext }
-            ).webkitAudioContext();
-        } else {
-            throw new Error("Web Audio API is not supported in this browser");
-        }
-    } catch (e) {
-        console.error("Web Audio API is not supported in this browser", e);
-        return null;
-    }
-};
+import * as React from "react";
 
-export const playNotificationSound = () => {
-    const audioCtx = initAudio();
-    if (audioCtx === null) {
-        console.warn(
-            "AudioContext could not be initialized. Sound was not played."
-        );
-        return;
-    }
+export const useSound = () => {
+    const [isPlaying, setIsPlaying] = React.useState(false);
+    const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
-    if (audioCtx.state === "suspended") {
-        audioCtx.resume().catch((e: unknown) => {
-            console.error("Failed to resume AudioContext:", e);
+    React.useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        audioRef.current ??= new Audio("/sounds/alarm.mp3");
+        const audio = audioRef.current;
+
+        const handlePlay = () => {
+            setIsPlaying(true);
+        };
+        const handleEnd = () => {
+            setIsPlaying(false);
+            // eslint-disable-next-line functional/immutable-data
+            audio.currentTime = 0;
+        };
+        const handleError = () => {
+            setIsPlaying(false);
+        };
+
+        audio.addEventListener("play", handlePlay);
+        audio.addEventListener("ended", handleEnd);
+        audio.addEventListener("error", handleError);
+
+        return () => {
+            audio.removeEventListener("play", handlePlay);
+            audio.removeEventListener("ended", handleEnd);
+            audio.removeEventListener("error", handleError);
+        };
+    }, []);
+
+    const initAudio = React.useCallback(() => {
+        const audio = audioRef.current;
+        if (audio === null) return;
+
+        // eslint-disable-next-line functional/immutable-data
+        audio.volume = 0;
+        audio.play().catch(() => {
+            /* ignore */
         });
-    }
+        audio.pause();
+        // eslint-disable-next-line functional/immutable-data
+        audio.currentTime = 0;
+        // eslint-disable-next-line functional/immutable-data
+        audio.volume = 1;
+    }, []);
 
-    const oscillator = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
+    const playAlarmSound = React.useCallback(() => {
+        const audio = audioRef.current;
+        if (audio === null || isPlaying) return;
+        audio.play().catch((e: unknown) => {
+            console.error("Failed to play sound:", e);
+        });
+    }, [isPlaying]);
 
-    oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // A4 note
-    gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime); // Volume
-
-    oscillator.start(audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(
-        0.0001,
-        audioCtx.currentTime + 0.5
-    ); // Fade out
-    oscillator.stop(audioCtx.currentTime + 0.5);
+    return { initAudio, playAlarmSound };
 };

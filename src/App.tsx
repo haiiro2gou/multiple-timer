@@ -10,7 +10,7 @@ import {
     useSchedules,
     initializeTimerCache,
 } from "./features/schedule";
-import { initAudio, playNotificationSound } from "./features/sound.ts";
+import { useSound } from "./features/sound.ts";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const AppContent = () => {
@@ -21,6 +21,7 @@ const AppContent = () => {
     const [flashingId, setFlashingId] = React.useState<string | null>(null);
     const flashTimeoutRef = React.useRef<number | null>(null);
     const triggeredIdsRef = React.useRef<Set<string>>(new Set());
+    const { initAudio, playAlarmSound } = useSound();
 
     React.useEffect(() => {
         const initializeAudio = () => {
@@ -32,7 +33,7 @@ const AppContent = () => {
         return () => {
             window.removeEventListener("click", initializeAudio);
         };
-    }, []);
+    }, [initAudio]);
 
     React.useEffect(() => {
         const now = new Date(currentTime);
@@ -44,7 +45,7 @@ const AppContent = () => {
             triggeredIdsRef.current.add(schedule.id);
 
             // Immediate feedback
-            playNotificationSound();
+            playAlarmSound();
             setFlashingId(schedule.id);
 
             if (schedule.type === "timer" && schedule.repeat)
@@ -118,7 +119,7 @@ const AppContent = () => {
             )
                 triggerEvent(elem);
         });
-    }, [currentTime, restartTimer, schedules, updateSchedule]);
+    }, [currentTime, playAlarmSound, restartTimer, schedules, updateSchedule]);
 
     const handleAddSchedule = React.useCallback(() => {
         showModal(<ScheduleForm onClose={hideModal} />);
