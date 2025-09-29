@@ -1,25 +1,26 @@
 import * as React from "react";
 
 export const useSound = () => {
-    const [isPlaying, setIsPlaying] = React.useState(false);
     const audioRef = React.useRef<HTMLAudioElement | null>(null);
+    const isPlayingRef = React.useRef(false);
 
     React.useEffect(() => {
         if (typeof window === "undefined") return;
 
-        audioRef.current ??= new Audio("/sounds/alarm.mp3");
-        const audio = audioRef.current;
+        const audio = new Audio("/sounds/alarm.mp3");
+        audioRef.current = audio;
 
         const handlePlay = () => {
-            setIsPlaying(true);
+            isPlayingRef.current = true;
         };
         const handleEnd = () => {
-            setIsPlaying(false);
+            isPlayingRef.current = false;
             // eslint-disable-next-line functional/immutable-data
             audio.currentTime = 0;
         };
         const handleError = () => {
-            setIsPlaying(false);
+            console.error("Error playing sound");
+            isPlayingRef.current = false;
         };
 
         audio.addEventListener("play", handlePlay);
@@ -30,6 +31,8 @@ export const useSound = () => {
             audio.removeEventListener("play", handlePlay);
             audio.removeEventListener("ended", handleEnd);
             audio.removeEventListener("error", handleError);
+            audio.pause();
+            audioRef.current = null;
         };
     }, []);
 
@@ -38,24 +41,23 @@ export const useSound = () => {
         if (audio === null) return;
 
         // eslint-disable-next-line functional/immutable-data
-        audio.volume = 0;
+        audio.volume = 0.0;
         audio.play().catch(() => {
             /* ignore */
         });
-        audio.pause();
         // eslint-disable-next-line functional/immutable-data
         audio.currentTime = 0;
         // eslint-disable-next-line functional/immutable-data
-        audio.volume = 1;
+        audio.volume = 1.0;
     }, []);
 
     const playAlarmSound = React.useCallback(() => {
         const audio = audioRef.current;
-        if (audio === null || isPlaying) return;
+        if (audio === null || isPlayingRef.current) return;
         audio.play().catch((e: unknown) => {
-            console.error("Failed to play sound:", e);
+            console.error("Error playing sound", e);
         });
-    }, [isPlaying]);
+    }, []);
 
     return { initAudio, playAlarmSound };
 };
