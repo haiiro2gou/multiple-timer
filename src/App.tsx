@@ -10,6 +10,7 @@ import {
     useSchedules,
     initializeTimerCache,
 } from "./features/schedule";
+import { initAudio, playNotificationSound } from "./features/sound.ts";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const AppContent = () => {
@@ -22,6 +23,18 @@ const AppContent = () => {
     const triggeredIdsRef = React.useRef<Set<string>>(new Set());
 
     React.useEffect(() => {
+        const initializeAudio = () => {
+            initAudio();
+            window.removeEventListener("click", initializeAudio);
+        };
+        window.addEventListener("click", initializeAudio);
+
+        return () => {
+            window.removeEventListener("click", initializeAudio);
+        };
+    }, []);
+
+    React.useEffect(() => {
         const now = new Date(currentTime);
 
         // Function to trigger an event
@@ -31,11 +44,7 @@ const AppContent = () => {
             triggeredIdsRef.current.add(schedule.id);
 
             // Immediate feedback
-            alert(
-                `${
-                    schedule.type === "alarm" ? "Alarm" : "Timer"
-                }: ${schedule.name} triggered!`
-            );
+            playNotificationSound();
             setFlashingId(schedule.id);
 
             if (schedule.type === "timer" && schedule.repeat)
