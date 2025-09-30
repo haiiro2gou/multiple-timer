@@ -7,8 +7,8 @@ export const useSound = () => {
     React.useEffect(() => {
         if (typeof window === "undefined") return;
 
-         
         const audio = new Audio(
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             `${(import.meta.env as { BASE_URL: string }).BASE_URL}sounds/alarm.mp3`
         );
         audioRef.current = audio;
