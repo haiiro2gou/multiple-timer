@@ -13,10 +13,10 @@ concurrency:
   cancel-in-progress: true
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22.x]
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -26,13 +26,31 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '22'
+          node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
+        env:
+          PUBLIC_URL: /multiple-timer/
 
-      - name: Deploy application
-        run: npm run deploy
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./dist
+
+  build:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup pages
+        uses: actions/configure-pages@v3
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v3

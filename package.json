@@ -15,7 +15,7 @@
     "lint": "npm-run-all --parallel eslint check-types",
     "lint:fix": "npm-run-all --parallel eslint:fix check-types format",
     "prepare": "husky",
-    "deploy": "npm run build && gh-pages -d dist -b deploy"
+    "deploy": "gh-pages -d dist -b deploy"
   },
   "author": "haiiro2gou <mrashen.2gou@gmail.com>",
   "license": "MIT License",
