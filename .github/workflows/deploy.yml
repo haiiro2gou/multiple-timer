@@ -1,4 +1,4 @@
-name: deploy
+name: Deploy to GitHub Pages
 on:
   push:
     tags:
@@ -9,14 +9,11 @@ permissions:
   pages: write
   id-token: write
 concurrency:
-  group: 'deploy'
+  group: 'pages'
   cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [22.x]
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -26,7 +23,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '22.x'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -39,7 +37,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ./dist
+          path: './dist'
 
   deploy:
     environment:
