@@ -7,7 +7,10 @@ export const useSound = () => {
     React.useEffect(() => {
         if (typeof window === "undefined") return;
 
-        const audio = new Audio("/sounds/alarm.mp3");
+         
+        const audio = new Audio(
+            `${(import.meta.env as { BASE_URL: string }).BASE_URL}sounds/alarm.mp3`
+        );
         audioRef.current = audio;
 
         const handlePlay = () => {
