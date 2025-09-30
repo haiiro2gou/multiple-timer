@@ -12,7 +12,7 @@ concurrency:
   group: 'deploy'
   cancel-in-progress: true
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -37,20 +37,17 @@ jobs:
           PUBLIC_URL: /multiple-timer/
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
 
-  build:
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    needs: deploy
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Setup pages
-        uses: actions/configure-pages@v3
-
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v3
