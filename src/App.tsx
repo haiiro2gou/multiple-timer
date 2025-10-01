@@ -10,6 +10,7 @@ import {
     useSchedules,
     initializeTimerCache,
 } from "./features/schedule";
+import { CategoryTabs } from "./features/category";
 import { useSound } from "./features/sound.ts";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -22,6 +23,7 @@ const AppContent = () => {
     const flashTimeoutRef = React.useRef<number | null>(null);
     const triggeredIdsRef = React.useRef<Set<string>>(new Set());
     const { initAudio, playAlarmSound } = useSound();
+    const [activeCategoryId, setActiveCategoryId] = React.useState("all");
 
     React.useEffect(() => {
         const initializeAudio = () => {
@@ -122,8 +124,19 @@ const AppContent = () => {
     }, [currentTime, playAlarmSound, restartTimer, schedules, updateSchedule]);
 
     const handleAddSchedule = React.useCallback(() => {
-        showModal(<ScheduleForm onClose={hideModal} />);
-    }, [hideModal, showModal]);
+        if (activeCategoryId === "all") {
+            alert("Please select a specific category to add a schedule.");
+            return;
+        }
+        showModal(
+            <ScheduleForm onClose={hideModal} categoryId={activeCategoryId} />
+        );
+    }, [activeCategoryId, hideModal, showModal]);
+
+    const filteredSchedules = React.useMemo(() => {
+        if (activeCategoryId === "all") return schedules;
+        return schedules.filter(s => s.categoryId === activeCategoryId);
+    }, [activeCategoryId, schedules]);
 
     return (
         <>
@@ -133,13 +146,17 @@ const AppContent = () => {
                     <h1 className="text-4xl font-bold text-start text-slate-900">
                         Timers / Alarms
                     </h1>
+                    <CategoryTabs
+                        activeCategoryId={activeCategoryId}
+                        onSelectCategory={setActiveCategoryId}
+                    />
                 </div>
             </header>
 
             {/* Main content */}
             <main className="w-full px-4 sm:px-6 lg:px-8 pt-8 pb-28">
                 <ScheduleList
-                    schedules={schedules}
+                    schedules={filteredSchedules}
                     currentTime={currentTime}
                     flashingId={flashingId}
                 />
@@ -151,6 +168,7 @@ const AppContent = () => {
                     onClick={handleAddSchedule}
                     aria-label="Add Schedule"
                     className="w-16 h-16 pb-2.5 bg-indigo-600 text-white rounded-full flex items-center justify-center text-4xl shadow-lg transition-transform hover:scale-110"
+                    disabled={activeCategoryId === "all"}
                 >
                     +
                 </button>

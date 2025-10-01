@@ -84,7 +84,13 @@ export const ScheduleItem = ({
 
     const handleEdit = React.useCallback(() => {
         setIsMenuOpen(false);
-        showModal(<ScheduleForm schedule={schedule} onClose={hideModal} />);
+        showModal(
+            <ScheduleForm
+                schedule={schedule}
+                onClose={hideModal}
+                categoryId={schedule.categoryId}
+            />
+        );
     }, [hideModal, schedule, showModal]);
 
     const confirmDelete = React.useCallback(() => {

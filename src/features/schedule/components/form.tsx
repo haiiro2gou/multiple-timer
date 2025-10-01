@@ -7,10 +7,15 @@ import { useSchedules } from "../hooks/use-schedules.ts";
 interface ScheduleFormProps {
     schedule?: Schedule;
     onClose: () => void;
+    categoryId: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const ScheduleForm = ({ schedule, onClose }: ScheduleFormProps) => {
+export const ScheduleForm = ({
+    schedule,
+    onClose,
+    categoryId,
+}: ScheduleFormProps) => {
     const { addSchedule, updateSchedule } = useSchedules();
 
     const [type, setType] = React.useState<"alarm" | "timer">(
@@ -108,6 +113,7 @@ export const ScheduleForm = ({ schedule, onClose }: ScheduleFormProps) => {
                     time,
                     enabled: true,
                     days,
+                    categoryId: schedule?.categoryId ?? categoryId,
                 };
                 if (schedule !== undefined && schedule.type === "alarm")
                     updateSchedule({ ...schedule, ...alarmData });
@@ -126,6 +132,7 @@ export const ScheduleForm = ({ schedule, onClose }: ScheduleFormProps) => {
                     targetTime: Date.now() + duration,
                     remainingOnPause: null,
                     repeat,
+                    categoryId: schedule?.categoryId ?? categoryId,
                 };
 
                 if (schedule !== undefined && schedule.type === "timer")
@@ -137,6 +144,7 @@ export const ScheduleForm = ({ schedule, onClose }: ScheduleFormProps) => {
         },
         [
             addSchedule,
+            categoryId,
             days,
             minutes,
             name,
