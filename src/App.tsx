@@ -1,29 +1,26 @@
 import * as React from "react";
 
 import { CacheProvider } from "./features/cache-provider.tsx";
-import { ModalProvider, useModal } from "./features/modal";
+import { ModalProvider } from "./features/modal";
 import {
     type Schedule,
-    ScheduleList,
-    ScheduleForm,
     useCurrentTime,
     useSchedules,
     initializeTimerCache,
 } from "./features/schedule";
-import { CategoryTabs } from "./features/category";
+import { CategoryPanel, useCategories } from "./features/category";
 import { useSound } from "./features/sound.ts";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const AppContent = () => {
     const { schedules, updateSchedule, restartTimer } = useSchedules();
+    const { categories, addCategory } = useCategories();
     const currentTime = useCurrentTime();
-    const { showModal, hideModal } = useModal();
     const lastTriggeredTimeRef = React.useRef<string | null>(null);
     const [flashingId, setFlashingId] = React.useState<string | null>(null);
     const flashTimeoutRef = React.useRef<number | null>(null);
     const triggeredIdsRef = React.useRef<Set<string>>(new Set());
     const { initAudio, playAlarmSound } = useSound();
-    const [activeCategoryId, setActiveCategoryId] = React.useState("all");
 
     React.useEffect(() => {
         const initializeAudio = () => {
@@ -123,20 +120,21 @@ const AppContent = () => {
         });
     }, [currentTime, playAlarmSound, restartTimer, schedules, updateSchedule]);
 
-    const handleAddSchedule = React.useCallback(() => {
-        if (activeCategoryId === "all") {
-            alert("Please select a specific category to add a schedule.");
-            return;
-        }
-        showModal(
-            <ScheduleForm onClose={hideModal} categoryId={activeCategoryId} />
-        );
-    }, [activeCategoryId, hideModal, showModal]);
+    const groupedSchedules = React.useMemo(
+        () =>
+            categories.map(elem => ({
+                category: elem,
+                schedules: schedules.filter(
+                    elem2 => elem2.categoryId === elem.id
+                ),
+            })),
+        [categories, schedules]
+    );
 
-    const filteredSchedules = React.useMemo(() => {
-        if (activeCategoryId === "all") return schedules;
-        return schedules.filter(s => s.categoryId === activeCategoryId);
-    }, [activeCategoryId, schedules]);
+    const handleAddCategory = React.useCallback(() => {
+        const name = prompt("Enter new category name:");
+        if (name !== null) addCategory({ name });
+    }, [addCategory]);
 
     return (
         <>
@@ -146,33 +144,29 @@ const AppContent = () => {
                     <h1 className="text-4xl font-bold text-start text-slate-900">
                         Timers / Alarms
                     </h1>
-                    <CategoryTabs
-                        activeCategoryId={activeCategoryId}
-                        onSelectCategory={setActiveCategoryId}
-                    />
+                    <button
+                        onClick={handleAddCategory}
+                        className="button button-secondary"
+                    >
+                        + Add Category
+                    </button>
                 </div>
             </header>
 
             {/* Main content */}
             <main className="w-full px-4 sm:px-6 lg:px-8 pt-8 pb-28">
-                <ScheduleList
-                    schedules={filteredSchedules}
-                    currentTime={currentTime}
-                    flashingId={flashingId}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {groupedSchedules.map(elem => (
+                        <CategoryPanel
+                            key={elem.category.id}
+                            category={elem.category}
+                            schedules={elem.schedules}
+                            currentTime={currentTime}
+                            flashingId={flashingId}
+                        />
+                    ))}
+                </div>
             </main>
-
-            {/* Floating Add Button */}
-            <div className="fixed bottom-8 right-8 z-10">
-                <button
-                    onClick={handleAddSchedule}
-                    aria-label="Add Schedule"
-                    className="w-16 h-16 pb-2.5 bg-indigo-600 text-white rounded-full flex items-center justify-center text-4xl shadow-lg transition-transform hover:scale-110"
-                    disabled={activeCategoryId === "all"}
-                >
-                    +
-                </button>
-            </div>
         </>
     );
 };

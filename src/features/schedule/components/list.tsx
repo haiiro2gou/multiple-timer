@@ -17,7 +17,7 @@ export const ScheduleList = ({
 }: ScheduleListProps) => {
     if (schedules.length === 0) {
         return (
-            <p className="mt-12 text-center text-slate-500">
+            <p className="flex items-center justify-center h-24 border-2 border-dashed border-slate-300 rounded-lg">
                 No schedules available.
             </p>
         );

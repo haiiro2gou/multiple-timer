@@ -19,6 +19,8 @@ export const useCategories = () => {
 
     const addCategoryMutation = useMutation({
         mutationFn: async (data: Omit<Category, "id">) => {
+            if (data.name.trim().length === 0) return;
+
             const newCategory: Category = { ...data, id: uuidv4() };
             const currentCategories =
                 queryClient.getQueryData<Category[]>(categoryQueryKeys.all) ??
