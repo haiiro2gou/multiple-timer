@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .schedule-item {
-    @apply p-4 rounded-lg shadow-md flex items-center transition-all duration-300;
+    @apply p-4 rounded-lg shadow-md flex items-center transition-all duration-300 border border-slate-200;
 }
 
 .schedule-content {

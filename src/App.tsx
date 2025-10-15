@@ -139,23 +139,17 @@ const AppContent = () => {
     return (
         <>
             {/* Header */}
-            <header className="sticky top-0 z-10 w-fll bg-slate-100/95 backdrop-blue-sm shadow-sm">
-                <div className="px-4 sm:px-6 lg:px-8 py-4">
-                    <h1 className="text-4xl font-bold text-start text-slate-900">
+            <header className="w-full pt-8 pb-4 px-4 sm:px-6 lg:px-8 flex-shrink-0">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-5xl font-extrabold text-slate-900">
                         Timers / Alarms
                     </h1>
-                    <button
-                        onClick={handleAddCategory}
-                        className="button button-secondary"
-                    >
-                        + Add Category
-                    </button>
                 </div>
             </header>
 
             {/* Main content */}
-            <main className="w-full px-4 sm:px-6 lg:px-8 pt-8 pb-28">
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            <main className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8 flex-grow min-h-0 overflow-x-auto">
+                <div className="flex space-x-8 h-full">
                     {groupedSchedules.map(elem => (
                         <CategoryPanel
                             key={elem.category.id}
@@ -165,6 +159,17 @@ const AppContent = () => {
                             flashingId={flashingId}
                         />
                     ))}
+                    <button
+                        onClick={handleAddCategory}
+                        className="border-4 border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-200 hover:border-slate-400 transition-colors h-full w-96 flex-shrink-0"
+                    >
+                        <div className="text-center">
+                            <div className="text-4xl">+</div>
+                            <div className="mt-2 font-semibold">
+                                Add Category
+                            </div>
+                        </div>
+                    </button>
                 </div>
             </main>
         </>
@@ -175,7 +180,7 @@ const AppContent = () => {
 export const App = () => (
     <CacheProvider initializer={initializeTimerCache}>
         <ModalProvider>
-            <div className="min-h-screen bg-slate-50">
+            <div className="h-screen bg-slate-100 flex flex-col overflow-hidden">
                 <AppContent />
             </div>
         </ModalProvider>
