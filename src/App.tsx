@@ -1,23 +1,28 @@
 import * as React from "react";
 
 import { CacheProvider } from "./features/cache-provider.tsx";
-import { ModalProvider } from "./features/modal";
+import { ModalProvider, useModal } from "./features/modal";
 import {
     type Schedule,
     useCurrentTime,
     useSchedules,
     initializeTimerCache,
 } from "./features/schedule";
-import { CategoryPanel, useCategories } from "./features/category";
+import {
+    CategoryForm,
+    CategoryPanel,
+    useCategories,
+} from "./features/category";
 import { useSound } from "./features/sound.ts";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const AppContent = () => {
     const { schedules, updateSchedule, restartTimer } = useSchedules();
-    const { categories, addCategory } = useCategories();
+    const { categories } = useCategories();
     const currentTime = useCurrentTime();
-    const lastTriggeredTimeRef = React.useRef<string | null>(null);
+    const { showModal, hideModal } = useModal();
     const [flashingId, setFlashingId] = React.useState<string | null>(null);
+    const lastTriggeredTimeRef = React.useRef<string | null>(null);
     const flashTimeoutRef = React.useRef<number | null>(null);
     const triggeredIdsRef = React.useRef<Set<string>>(new Set());
     const { initAudio, playAlarmSound } = useSound();
@@ -132,9 +137,8 @@ const AppContent = () => {
     );
 
     const handleAddCategory = React.useCallback(() => {
-        const name = prompt("Enter new category name:");
-        if (name !== null) addCategory({ name });
-    }, [addCategory]);
+        showModal(<CategoryForm onClose={hideModal} />);
+    }, [hideModal, showModal]);
 
     return (
         <>
