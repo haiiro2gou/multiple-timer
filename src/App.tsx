@@ -153,7 +153,7 @@ const AppContent = () => {
 
             {/* Main content */}
             <main className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
                     {groupedSchedules.map(elem => (
                         <CategoryPanel
                             key={elem.category.id}

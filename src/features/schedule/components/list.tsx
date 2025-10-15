@@ -24,7 +24,7 @@ export const ScheduleList = ({
     }
 
     return (
-        <ul className="space-y-4">
+        <ul className="space-y-3">
             {schedules.map(elem => (
                 <ScheduleItem
                     key={elem.id}
