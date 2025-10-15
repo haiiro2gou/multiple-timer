@@ -148,8 +148,8 @@ const AppContent = () => {
             </header>
 
             {/* Main content */}
-            <main className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8 flex-grow min-h-0 overflow-x-auto">
-                <div className="flex space-x-8 h-full">
+            <main className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                     {groupedSchedules.map(elem => (
                         <CategoryPanel
                             key={elem.category.id}
@@ -161,7 +161,7 @@ const AppContent = () => {
                     ))}
                     <button
                         onClick={handleAddCategory}
-                        className="border-4 border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-200 hover:border-slate-400 transition-colors h-full w-96 flex-shrink-0"
+                        className="border-4 border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-200 hover:border-slate-400 transition-colors min-h-[24rem]"
                     >
                         <div className="text-center">
                             <div className="text-4xl">+</div>
@@ -180,7 +180,7 @@ const AppContent = () => {
 export const App = () => (
     <CacheProvider initializer={initializeTimerCache}>
         <ModalProvider>
-            <div className="h-screen bg-slate-100 flex flex-col overflow-hidden">
+            <div className="min-h-screen bg-slate-100">
                 <AppContent />
             </div>
         </ModalProvider>

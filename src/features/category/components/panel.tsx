@@ -77,7 +77,7 @@ export const CategoryPanel = ({
     }, []);
 
     return (
-        <section className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg flex flex-col w-96 flex-shrink-0">
+        <section className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg flex flex-col h-[32rem]">
             {/* Header */}
             <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-200">
                 <h2 className="text-xl font-bold text-slate-800">
