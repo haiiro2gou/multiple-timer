@@ -1,4 +1,8 @@
 import * as React from "react";
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 import { useModal } from "../../modal";
 import { type Schedule, ScheduleForm, ScheduleList } from "../../schedule";
@@ -102,6 +106,11 @@ export const CategoryPanel = ({
         setIsCollapsed(prev => !prev);
     }, []);
 
+    const scheduleIds = React.useMemo(
+        () => schedules.map(elem => elem.id),
+        [schedules]
+    );
+
     return (
         <section className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg flex flex-col">
             {/* Header */}
@@ -190,34 +199,37 @@ export const CategoryPanel = ({
             <div
                 className={`transition-all duration-300 ease-in-out grid ${isCollapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]"}`}
             >
-                <div className="overflow-hidden">
-                    <div className="p-4 space-y-3">
+                <div className="flex-grow space-y-3 overflow-y-auto p-4 min-h-0">
+                    <SortableContext
+                        items={scheduleIds}
+                        strategy={verticalListSortingStrategy}
+                    >
                         <ScheduleList
                             schedules={schedules}
                             currentTime={currentTime}
                             flashingId={flashingId}
                         />
-                        {/* Add schedule button 2 */}
-                        <button
-                            ref={buttonButtonRef}
-                            onClick={handleAddSchedule}
-                            className="w-full flex items-center justify-center mt-2 p-4 border-2 border-dashed border-slate-300 rounded-lg text-slate-400 hover:bg-slate-100 hover:border-slate-400 transition-colors"
+                    </SortableContext>
+                    {/* Add schedule button 2 */}
+                    <button
+                        ref={buttonButtonRef}
+                        onClick={handleAddSchedule}
+                        className="w-full flex items-center justify-center mt-2 p-4 border-2 border-dashed border-slate-300 rounded-lg text-slate-400 hover:bg-slate-100 hover:border-slate-400 transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 mr-2"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5 mr-2"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                            Add Schedule
-                        </button>
-                    </div>
+                            <path
+                                fillRule="evenodd"
+                                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                clipRule="evenodd"
+                            />
+                        </svg>
+                        Add Schedule
+                    </button>
                 </div>
             </div>
         </section>

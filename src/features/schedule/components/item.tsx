@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { WEEK_DAYS } from "../../../constants";
 import { useModal } from "../../modal";
@@ -47,6 +49,10 @@ export const ScheduleItem = ({
     const { showModal, hideModal } = useModal();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const menuRef = React.useRef<HTMLDivElement>(null);
+
+    const { attributes, listeners, setNodeRef, transform, transition } =
+        useSortable({ id: schedule.id });
+    const style = { transform: CSS.Transform.toString(transform), transition };
 
     // Close menu when clicking outside
     React.useEffect(() => {
@@ -243,8 +249,27 @@ export const ScheduleItem = ({
 
     return (
         <li
+            ref={setNodeRef}
+            style={style}
             className={`schedule-item ${isFinished ? "bg-green-50" : "bg-white"} ${isFlashing ? "animate-flash" : ""}`}
         >
+            {/* Drag handle */}
+            <div
+                {...listeners}
+                {...attributes}
+                className="cursor-grab text-slate-400 p-1 touch-none"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                >
+                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+            </div>
+
+            {/* Main content */}
             <div
                 className={`schedule-content ${isInactive ? "opacity-60" : ""}`}
             >

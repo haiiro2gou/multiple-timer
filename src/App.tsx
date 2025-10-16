@@ -1,4 +1,5 @@
 import * as React from "react";
+import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 
 import { CacheProvider } from "./features/cache-provider.tsx";
 import { ModalProvider, useModal } from "./features/modal";
@@ -14,10 +15,12 @@ import {
     useCategories,
 } from "./features/category";
 import { useSound } from "./features/sound.ts";
+import { arrayMove } from "@dnd-kit/sortable";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const AppContent = () => {
-    const { schedules, updateSchedule, restartTimer } = useSchedules();
+    const { schedules, updateSchedule, setSchedules, restartTimer } =
+        useSchedules();
     const { categories } = useCategories();
     const currentTime = useCurrentTime();
     const { showModal, hideModal } = useModal();
@@ -125,6 +128,25 @@ const AppContent = () => {
         });
     }, [currentTime, playAlarmSound, restartTimer, schedules, updateSchedule]);
 
+    const handleDragEnd = React.useCallback(
+        (event: DragEndEvent) => {
+            const { active, over } = event;
+
+            if (over !== null && active.id !== over.id) {
+                const oldIndex = schedules.findIndex(
+                    elem => elem.id === active.id
+                );
+                const newIndex = schedules.findIndex(
+                    elem => elem.id === over.id
+                );
+
+                const newSchedules = arrayMove(schedules, oldIndex, newIndex);
+                setSchedules(newSchedules);
+            }
+        },
+        [schedules, setSchedules]
+    );
+
     const groupedSchedules = React.useMemo(
         () =>
             categories.map(elem => ({
@@ -141,7 +163,10 @@ const AppContent = () => {
     }, [hideModal, showModal]);
 
     return (
-        <>
+        <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+        >
             {/* Header */}
             <header className="w-full pt-8 pb-4 px-4 sm:px-6 lg:px-8 flex-shrink-0">
                 <div className="flex justify-between items-center">
@@ -176,7 +201,7 @@ const AppContent = () => {
                     </button>
                 </div>
             </main>
-        </>
+        </DndContext>
     );
 };
 
