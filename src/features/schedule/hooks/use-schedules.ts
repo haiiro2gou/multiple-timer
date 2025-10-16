@@ -70,6 +70,16 @@ export const useSchedules = () => {
         },
     });
 
+    const setSchedulesMutation = useMutation({
+        mutationFn: async (schedules: Schedule[]) => {
+            saveSchedulesToStorage(schedules);
+            return Promise.resolve(schedules);
+        },
+        onSuccess: updatedSchedules => {
+            queryClient.setQueryData(scheduleQueryKeys.all, updatedSchedules);
+        },
+    });
+
     // Pause and resume functions for timers
     const pauseTimer = (id: string) => {
         const currentSchedules =
@@ -147,6 +157,7 @@ export const useSchedules = () => {
         addSchedule: addScheduleMutation.mutate,
         updateSchedule: updateScheduleMutation.mutate,
         deleteSchedule: deleteScheduleMutation.mutate,
+        setSchedules: setSchedulesMutation.mutate,
         pauseTimer,
         resumeTimer,
         restartTimer,
