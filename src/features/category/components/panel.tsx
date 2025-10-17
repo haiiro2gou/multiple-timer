@@ -1,8 +1,10 @@
 import * as React from "react";
 import {
     SortableContext,
+    useSortable,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { useModal } from "../../modal";
 import { type Schedule, ScheduleForm, ScheduleList } from "../../schedule";
@@ -33,6 +35,13 @@ export const CategoryPanel = ({
         React.useState(false);
     const menuRef = React.useRef<HTMLDivElement>(null);
     const buttonButtonRef = React.useRef<HTMLButtonElement>(null);
+
+    const { attributes, listeners, setNodeRef, transform, transition } =
+        useSortable({ id: category.id, data: { type: "category" } });
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
 
     // Make upper button invisible when lower button is visible
     React.useEffect(() => {
@@ -112,12 +121,20 @@ export const CategoryPanel = ({
     );
 
     return (
-        <section className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg flex flex-col">
+        <section
+            ref={setNodeRef}
+            style={style}
+            className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg flex flex-col w-96"
+        >
             {/* Header */}
             <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-slate-200">
                 <div className="flex items-center gap-2">
                     {/* Drag & drop handle */}
-                    <div className="cursor-grab text-slate-400 p-1">
+                    <div
+                        {...listeners}
+                        {...attributes}
+                        className="cursor-grab text-slate-400 p-1"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-5 w-5"

@@ -50,8 +50,14 @@ export const ScheduleItem = ({
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const menuRef = React.useRef<HTMLDivElement>(null);
 
-    const { attributes, listeners, setNodeRef, transform, transition } =
-        useSortable({ id: schedule.id });
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: schedule.id });
     const style = { transform: CSS.Transform.toString(transform), transition };
 
     // Close menu when clicking outside
@@ -251,13 +257,15 @@ export const ScheduleItem = ({
         <li
             ref={setNodeRef}
             style={style}
-            className={`schedule-item ${isFinished ? "bg-green-50" : "bg-white"} ${isFlashing ? "animate-flash" : ""}`}
+            className={`schedule-item ${isDragging ? "invisible" : ""} ${isFinished ? "bg-green-50" : ""} ${
+                isFlashing ? "animate-flash" : ""
+            }`}
         >
             {/* Drag handle */}
             <div
                 {...listeners}
                 {...attributes}
-                className="cursor-grab text-slate-400 p-1 touch-none"
+                className="cursor-grab text-slate-400 pl-1 pr-2 py-1 touch-none"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

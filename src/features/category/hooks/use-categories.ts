@@ -66,10 +66,21 @@ export const useCategories = () => {
         },
     });
 
+    const setCategoriesMutation = useMutation({
+        mutationFn: async (newCategories: Category[]) => {
+            saveCategoriesToStorage(newCategories);
+            return Promise.resolve(newCategories);
+        },
+        onSuccess: updatedCategories => {
+            queryClient.setQueryData(categoryQueryKeys.all, updatedCategories);
+        },
+    });
+
     return {
         categories,
         addCategory: addCategoryMutation.mutate,
         updateCategory: updateCategoryMutation.mutate,
         deleteCategory: deleteCategoryMutation.mutate,
+        setCategories: setCategoriesMutation.mutate,
     };
 };
